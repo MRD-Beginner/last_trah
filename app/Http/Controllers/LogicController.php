@@ -7,47 +7,7 @@ use Illuminate\Http\Request;
 
 class LogicController extends Controller
 {
-    // public function compare(Request $request)
-    // {
-    //     $tree_id = $request->input('tree_id');
     
-    //     $person1 = Anggota_Keluarga::where('nama', $request->name1)
-    //                 ->where('tree_id', $tree_id)->first();
-    
-    //     $person2 = Anggota_Keluarga::where('nama', $request->name2)
-    //                 ->where('tree_id', $tree_id)->first();
-    
-    //     if (!$person1 || !$person2) {
-    //         return back()->with('error', 'Anggota keluarga tidak ditemukan.');
-    //     }
-    //     //untuk person1 -> person 2
-    //     $visited = [];
-    //     $path = [];
-    //     $found = $this->dfs($person1, $person2->id, $visited, $path);
-    
-    //     $relationshipDetails = $found
-    //         ? $this->relationshipPath($path, $person1->nama, $person2->nama)
-    //         : 'Tidak ada hubungan yang ditemukan.';
-
-    //     //Reverse person 2 -> person 1
-    //     $visitedReverse = [];
-    //     $pathReverse = [];
-    //     $foundReverse = $this->dfs($person2, $person1->id, $visitedReverse, $pathReverse);
-
-    //     $relationshipDetailsReversed = $foundReverse
-    //         ? $this->relationshipPath($pathReverse, $person2->name, $person1->name)
-    //         : 'Tidak ada hubungan yang ditemukan.';
-    
-    //     $tree = Trah::find($tree_id);
-    //     $members = Trah::where('tree_id', $tree_id)->get();
-    //     $rootMembers = $members->whereNull('parent_id');
-    
-    //     return view('compare', compact(
-    //         'tree_id', 'tree', 'members', 'rootMembers',
-    //         'person1', 'person2', 'relationshipDetails', 'relationshipDetailsReversed',
-    //         'path','pathReverse' 
-    //     ));
-    // }
 
     
     public function compare(Request $request, $tree_id)
