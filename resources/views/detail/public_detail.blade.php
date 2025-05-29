@@ -295,14 +295,12 @@
                             @if ($trah->id)
                                 <input type="hidden" name="tree_id" value="{{ $trah->id }}">
                             @endif
-                            <div class="row">
+                            <div class="row g-4">
                                 <div class="col mb-4">
                                     <label for="nama_anggota_keluarga" class="form-label">Nama</label>
                                     <input type="text" id="nama_anggota_keluarga" name="nama_anggota_keluarga"
                                         class="form-control" placeholder="Nama Lengkap" required>
                                 </div>
-                            </div>
-                            <div class="row g-4">
                                 <div class="col mb-4">
                                     <label for="jenis_kelamin" class="form-label">Jenis Kelamin</label>
                                     <select id="jenis_kelamin" name="jenis_kelamin" class="form-select" required>
@@ -310,30 +308,13 @@
                                         <option value="Perempuan">Perempuan</option>
                                     </select>
                                 </div>
-                                <div class="col mb-0">
-                                    <label for="tanggal_lahir" class="form-label">Tanggal Lahir</label>
-                                    <input type="date" id="tanggal_lahir" name="tanggal_lahir" class="form-control">
-                                </div>
                             </div>
                             <div class="row g-4">
                                 <div class="col mb-4">
-                                    <label for="parent_id" class="form-label">Orang Tua</label>
-                                    <select id="parent_id" name="parent_id" class="form-select">
-                                        <option value="">Pilih Orang Tua</option> <!-- Default empty option -->
-                                        @foreach ($anggota_keluarga as $member)
-                                            <option value="{{ $member->id }}"
-                                                {{ old('parent_id') == $member->id ? 'selected' : '' }}>
-                                                {{ $member->nama }}
-                                                @if ($member->jenis_kelamin === 'Laki-Laki')
-                                                    (Pak)
-                                                @else
-                                                    (Ibu)
-                                                @endif
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                    <label for="tanggal_lahir" class="form-label">Tanggal Lahir</label>
+                                    <input type="date" id="tanggal_lahir" name="tanggal_lahir" class="form-control">
                                 </div>
-                                <div class="col mb-0">
+                                <div class="col mb-4">
                                     <label for="urutan" class="form-label">Urutan</label>
                                     <select id="urutan" name="urutan" class="form-select" required>
                                         <option value="1">1</option>
@@ -350,6 +331,33 @@
                                         <option value="12">12</option>
                                         <option value="13">13</option>
                                         <option value="14">14</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row g-4">
+                                <div class="col mb-4">
+                                    <label for="parent1_id" class="form-label">Orang Tua 1</label>
+                                    <select id="parent1_id" name="parent1_id" class="form-select" onchange="loadPartners()">
+                                        <option value="">Pilih Orang Tua</option>
+                                        @foreach ($anggota_keluarga as $member)
+                                            <option value="{{ $member->id }}"
+                                                {{ old('parent1_id') == $member->id ? 'selected' : '' }}>
+                                                {{ $member->nama }}
+                                                @if ($member->jenis_kelamin === 'Laki-Laki')
+                                                    (Pak)
+                                                @else
+                                                    (Ibu)
+                                                @endif
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="col mb-4">
+                                    <label for="parent2_id" class="form-label">Orang Tua 2 (Pasangan)</label>
+                                    <select id="parent2_id" name="parent2_id" class="form-select" disabled>
+                                        <option value="">Pilih Pasangan</option>
+                                        <!-- Partners will be loaded via JavaScript -->
                                     </select>
                                 </div>
                             </div>
@@ -376,11 +384,13 @@
                             <div class="row g-4">
                                 <div class="col mb-4">
                                     <div class="mb-3">
-                                        <label for="keluarga_image" class="form-label">Upload Avatar</label>
+                                        <label for="keluarga_image_link" class="form-label">Link (Media Sosial, Foto,
+                                            Drive)</label>
                                         <img src="" class="img-thumbnail image-preview mb-3"
                                             style="display: none; max-width: 100px; max-height: 100px; object-fit: cover; aspect-ratio: 1/1; border-radius: 10px;">
-                                        <input class="form-control file-uploader" type="file" id="keluarga_image"
-                                            name="keluarga_image" accept="image/*" onchange="upload()">
+                                        <input class="form-control" type="url" id="keluarga_image_link"
+                                            name="keluarga_image_link" placeholder="https://example.com/image.jpg"
+                                            onchange="previewImageFromLink()">
                                     </div>
                                 </div>
                             </div>
@@ -1408,6 +1418,58 @@
     </script>
 
     <script>
+        const partnersData = {
+            @foreach ($anggota_keluarga as $member)
+                "{{ $member->id }}": [
+                    @foreach ($member->partners as $partner)
+                        {
+                            id: "{{ $partner->id }}",
+                            nama: "{{ $partner->nama }}",
+                            jenis_kelamin: "{{ $partner->jenis_kelamin }}"
+                        },
+                    @endforeach
+                ],
+            @endforeach
+        };
+
+        function loadPartners() {
+            const parent1Select = document.getElementById('parent1_id');
+            const parent2Select = document.getElementById('parent2_id');
+            const selectedId = parent1Select.value;
+
+            // Reset partner dropdown
+            parent2Select.innerHTML = '<option value="">Pilih Pasangan</option>';
+            parent2Select.disabled = true;
+
+            if (!selectedId) return;
+
+            // Enable and load partners if available
+            const partners = partnersData[selectedId];
+            if (partners && partners.length > 0) {
+                parent2Select.disabled = false;
+
+                partners.forEach(partner => {
+                    const option = document.createElement('option');
+                    option.value = partner.id;
+                    option.textContent =
+                        `${partner.nama} (${partner.jenis_kelamin === 'Laki-Laki' ? 'Pak' : 'Ibu'})`;
+
+                    // Set selected if this was the old value
+                    if ("{{ old('parent2_id') }}" == partner.id) {
+                        option.selected = true;
+                    }
+
+                    parent2Select.appendChild(option);
+                });
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            if (document.getElementById('parent1_id').value) {
+                loadPartners();
+            }
+        });
         document.addEventListener('DOMContentLoaded', function() {
             const table = document.getElementById('datatables');
             const tbody = table.querySelector('tbody');

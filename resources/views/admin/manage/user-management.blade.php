@@ -52,7 +52,6 @@
     <div class="card">
         <h5 class="card-header">Daftar User</h5>
         <div class="card-body">
-
             <div class="row g-6 mb-6">
                 <div class="col-sm-6 col-xl-3">
                     <div class="card">
@@ -125,9 +124,9 @@
                                     <span class="text-heading">Admin</span>
                                     <div class="d-flex align-items-center my-1">
                                         <h4 class="mb-0 me-2">
-                                          @if ($admincount )  
-                                            {{ $admincount }} 
-                                          @endif
+                                            @if ($admincount)
+                                                {{ $admincount }}
+                                            @endif
                                         </h4>
                                     </div>
                                     <small class="mb-0">Jumlah Total Admin</small>
@@ -137,6 +136,46 @@
                                         <i class="icon-base bx bx-user-voice icon-lg"></i>
                                     </span>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <div class="row g-3 align-items-center">
+                    <!-- Entries Per Page -->
+                    <div class="col-md-4 col-6">
+                        <div class="d-flex align-items-center">
+                            <label class="form-label mb-0 me-2">Menampilkan</label>
+                            <select id="entriesPerPage" class="form-select form-select-sm" style="width: 80px;">
+                                <option value="5" selected>5</option>
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                            <span class="ms-2">data</span>
+                        </div>
+                    </div>
+
+                    <!-- Role Filter -->
+                    <div class="col-md-4 col-6">
+                        <div class="d-flex align-items-center">
+                            <label class="form-label mb-0 me-2">Role</label>
+                            <select id="filterRole" class="form-select form-select-sm" style="width: 120px;">
+                                <option value="">Semua</option>
+                                <option value="admin">Admin</option>
+                                <option value="user">User</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Search Input -->
+                    <div class="col-md-4">
+                        <div class="d-flex justify-content-end">
+                            <div class="input-group input-group-sm" style="width: 250px;">
+                                <input type="search" id="searchInput" class="form-control" placeholder="Search...">
                             </div>
                         </div>
                     </div>
@@ -220,4 +259,100 @@
             </div>
         </div>
     </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        const table = document.getElementById('datatables');
+        const rows = table.querySelectorAll('tbody tr');
+        const entriesPerPage = document.getElementById('entriesPerPage');
+        const filterRole = document.getElementById('filterRole');
+        const searchInput = document.getElementById('searchInput');
+        const clearSearch = document.getElementById('clearSearch');
+    
+    // Variabel untuk pagination
+    let currentPage = 1;
+    let entries = parseInt(entriesPerPage.value);
+    
+    // Fungsi untuk memfilter data
+    function filterData() {
+    const roleValue = filterRole.value; // Jangan di lowercase dulu
+    const searchValue = searchInput.value.toLowerCase();
+    
+    rows.forEach(row => {
+        // Gunakan selektor yang lebih spesifik
+        const roleCell = row.querySelector('td:nth-child(3) div.ellipsis.text-center');
+        const role = roleCell ? roleCell.textContent.trim() : "";
+        
+        const nameCell = row.querySelector('td:nth-child(2) div.ellipsis.text-center');
+        const name = nameCell ? nameCell.textContent.toLowerCase() : "";
+        
+        const emailCell = row.querySelector('td:nth-child(4) div.text-ellipsis.text-center');
+        const email = emailCell ? emailCell.textContent.toLowerCase() : "";
+        
+        // Filter role (case sensitive jika diperlukan)
+        const roleMatch = !roleValue || role.toLowerCase() === roleValue.toLowerCase();
+        
+        // Filter search
+        const searchMatch = !searchValue || 
+                          name.includes(searchValue) || 
+                          email.includes(searchValue);
+        
+        row.style.display = (roleMatch && searchMatch) ? "" : "none";
+    });
+    
+    updatePagination();
+}
+    
+    // Fungsi untuk update pagination
+    function updatePagination() {
+        const visibleRows = Array.from(rows).filter(row => row.style.display !== 'none');
+        const totalPages = Math.ceil(visibleRows.length / entries);
+        
+        // Reset ke halaman 1 jika currentPage melebihi totalPages
+        if (currentPage > totalPages && totalPages > 0) {
+            currentPage = totalPages;
+        }
+        
+        // Sembunyikan semua baris
+        rows.forEach(row => row.style.display = 'none');
+        
+        // Tampilkan baris untuk halaman saat ini
+        const start = (currentPage - 1) * entries;
+        const end = start + entries;
+        
+        visibleRows.slice(start, end).forEach(row => {
+            row.style.display = '';
+        });
+        
+        // TODO: Tambahkan UI pagination di sini jika diperlukan
+    }
+    
+    // Event listeners
+    entriesPerPage.addEventListener('change', function() {
+        entries = parseInt(this.value);
+        currentPage = 1;
+        filterData();
+    });
+    
+    filterRole.addEventListener('change', function() {
+        currentPage = 1;
+        filterData();
+    });
+    
+    searchInput.addEventListener('input', function() {
+        currentPage = 1;
+        filterData();
+    });
+    
+    clearSearch.addEventListener('click', function() {
+        searchInput.value = '';
+        currentPage = 1;
+        filterData();
+    });
+    
+    // Inisialisasi awal
+    filterData();
+});
+    </script>
 @endsection
