@@ -268,9 +268,6 @@ class LogicController extends Controller
             }
         }
 
-        // test commit
-
-        // test cimmit 2
 
         //  Niece/Nephew once‐removed (dan lebih)
         if ($depth > 0) {
@@ -325,21 +322,6 @@ class LogicController extends Controller
             elseif ($current->parent_id == $next->id) {
                 $relation = ($current->gender == 'Laki-Laki') ? "putra (anak laki-laki) " : "putri (anak perempuan) ";
                 $detailedPath[] = " {$current->nama} {$relation}ke-{$current->urutan} dari {$next->nama}";
-                continue;
-            }
-
-            // 3. cek saudara kandung
-            if ($current->parent_id === $next->parent_id) {
-                if ($current->urutan < $next->urutan) {
-                    // current lebih tua → kakak
-                    $role = $current->gender === 'Laki-Laki' ? 'mas' : 'mbak';
-                } else {
-                    // current lebih muda → adik
-                    $role = $current->gender === 'Laki-Laki'
-                        ? 'adik laki-laki'
-                        : 'adik perempuan';
-                }
-                $detailedPath[] = " {$current->nama} {$role} dari {$next->nama}";
                 continue;
             }
          
