@@ -1220,7 +1220,7 @@
                                     </div>
 
                                     <div class="col d-flex justify-content-center align-items-center">
-                                        <button type="button" class="btn btn-primary rounded-circle"
+                                        <button type="submit" class="btn btn-primary rounded-circle"
                                             style="width: 50px; height: 50px; font-size: 24px;">VS</button>
                                     </div>
 
@@ -1244,10 +1244,7 @@
                                 </div>
                             </div>
 
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <button type="submit" class="btn btn-primary rounded-circle"
-                                    style="width: 30px; height: 30px; font-size: 18px;">-</button>
-                            </div>
+                            
                         </form>
 
 
