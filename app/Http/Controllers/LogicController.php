@@ -20,10 +20,8 @@ class LogicController extends Controller
         $pathReverse = null;
 
         if ($request->has('compare') && $request->filled(['name1', 'name2'])) {
-            $person1 = Anggota_Keluarga::where('nama', $request->name1)
-                      ->where('tree_id', $tree_id)->first();
-            $person2 = Anggota_Keluarga::where('nama', $request->name2)
-                      ->where('tree_id', $tree_id)->first();
+            $person1 = Anggota_Keluarga::where('nama', $request->name1)->where('tree_id', $tree_id)->first();
+            $person2 = Anggota_Keluarga::where('nama', $request->name2)->where('tree_id', $tree_id)->first();
 
             if ($person1 && $person2) {
                 // Person1 -> Person2

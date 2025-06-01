@@ -1256,13 +1256,6 @@
                                 <!-- Kolom hubungan anggota 1 -->
                                 <div class="col-md-6">
                                     <div class="bg-white shadow-md p-5 rounded-md mt-3">
-                                        @if (isset($person1->photo) && $person1->photo)
-                                            <div class="flex justify-center mb-3">
-                                                <img src="{{ asset('storage/' . $person1->photo) }}"
-                                                    alt="{{ $person1->name }}"
-                                                    class="w-48 h-48 rounded-full object-cover border-4 border-green-700" />
-                                            </div>
-                                        @endif
                                         @if (is_array($relationshipDetails))
                                             <div
                                                 class="bg-[#FEF3C7] flex justify-center text-gray-800 p-3 rounded-md mb-3">
@@ -1282,7 +1275,7 @@
                                                 <div class="bg-[#FEF3C7] text-gray-800 p-3 rounded-md mb-3">
                                                     <strong>Jalur (BFS fallback):</strong>
                                                     <p>
-                                                        {{ implode(' → ', array_map(fn($m) => $m->name, $path)) }}
+                                                        {{ implode(' → ', array_map(fn($m) => $m->nama, $path)) }}
                                                     </p>
                                                 </div>
                                             @endif
@@ -1295,13 +1288,6 @@
                                 <!-- Kolom hubungan keluarga 2 -->
                                 <div class="col-md-6 mt-4 mt-md-0">
                                     <div class="bg-white shadow-md p-5 rounded-md mt-3">
-                                        @if (isset($person2->photo) && $person2->photo)
-                                            <div class="flex justify-center mb-3">
-                                                <img src="{{ asset('storage/' . $person2->photo) }}"
-                                                    alt="{{ $person2->name }}"
-                                                    class="w-48 h-48 rounded-full object-cover border-4 border-green-700" />
-                                            </div>
-                                        @endif
                                         @if (is_array($relationshipDetailsReversed))
                                             <div
                                                 class="bg-[#FEF3C7] flex justify-center text-gray-800 p-3 rounded-md mb-3">
@@ -1321,7 +1307,7 @@
                                                 <div class="bg-[#FEF3C7] text-gray-800 p-3 rounded-md mb-3">
                                                     <strong>Jalur (BFS fallback):</strong>
                                                     <p>
-                                                        {{ implode(' → ', array_map(fn($m) => $m->name, $path)) }}
+                                                        {{ implode(' → ', array_map(fn($m) => $m->nama, $path)) }}
                                                     </p>
                                                 </div>
                                             @endif
