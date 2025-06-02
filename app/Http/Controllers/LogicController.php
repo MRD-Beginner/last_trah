@@ -12,12 +12,15 @@ class LogicController extends Controller
     
     public function compare(Request $request, $tree_id)
     {
+        
+        $anggota_keluarga = Anggota_Keluarga::where('tree_id', $tree_id)->get();
+
         $person1 = null;
         $person2 = null;
         $relationshipDetails = null;
         $relationshipDetailsReversed = null;
         $path = null;
-        $pathReverse = null;
+        $pathRev = null;
 
         if ($request->has('compare') && $request->filled(['name1', 'name2'])) {
             $person1 = Anggota_Keluarga::where('nama', $request->name1)->where('tree_id', $tree_id)->first();
@@ -41,15 +44,26 @@ class LogicController extends Controller
                     : 'Tidak ada hubungan yang ditemukan.';
             }
         }
+        return view('public_detail', [
+            'tree_id'                      => $tree_id,
+            'anggota_keluarga'            => $anggota_keluarga,
+            'person1'                     => $person1,
+            'person2'                     => $person2,
+            'relationshipDetails'          => $relationshipDetails,
+            'relationshipDetailsReversed'  => $relationshipDetailsReversed,
+            'path'                         => $path,
+            'pathRev'                      => $pathRev,
+        ]);
+        
 
-        return [
-            'person1' => $person1,
-            'person2' => $person2,
-            'relationshipDetails' => $relationshipDetails,
-            'relationshipDetailsReversed' => $relationshipDetailsReversed,
-            'path' => $path ?? null,
-            'pathReverse' => $pathRev ?? null
-        ];
+        // return [
+        //     'person1' => $person1,
+        //     'person2' => $person2,
+        //     'relationshipDetails' => $relationshipDetails,
+        //     'relationshipDetailsReversed' => $relationshipDetailsReversed,
+        //     'path' => $path ?? null,
+        //     'pathRev' => $pathRev ?? null
+        // ];
     }
 
 
@@ -209,9 +223,9 @@ class LogicController extends Controller
         // 3. Saudara kandung
         if ($depth === 0 && $first->parent_id === $last->parent_id) {
             if ($first->urutan < $last->urutan) {
-                return " {$first->nama} ". ($first->gender === 'Laki-Laki' ? 'mas dari' : 'mbak dari')." {$last->nama}" ;
+                return " {$first->nama} ". ($gender === 'Laki-Laki' ? 'mas dari' : 'mbak dari')." {$last->nama}" ;
             }
-            return ($first->gender === 'Laki-Laki' ? 'adik laki-laki dari' : 'adik perempuan dari')." {$last->nama}";
+            return ($gender === 'Laki-Laki' ? 'adik laki-laki dari' : 'adik perempuan dari')." {$last->nama}";
         }
 
         // 4. Sepupu  (nak-sanak)
@@ -245,7 +259,7 @@ class LogicController extends Controller
         if ($depth === -1 && optional($last->parent)->parent_id
             && $first->parent_id === $last->parent->parent_id) {
             $key = $first->urutan < $last->parent->urutan ? 'old uncle' : 'young uncle';
-            return $relations[$key][$first->gender]." {$last->nama}";
+            return $relations[$key][$gender]." {$last->nama}";
         }
 
         // 8. Keponakan 
@@ -278,7 +292,7 @@ class LogicController extends Controller
                 $u1  = $pFirst->urutan;
                 $u2  = optional($last->parent)->urutan;
                 $key = $u1 < $u2 ? 'old uncle' : 'young uncle';
-                return $relations[$key][$first->gender]." {$last->nama}";
+                return $relations[$key][$gender]." {$last->nama}";
             }
         }
 
@@ -296,7 +310,7 @@ class LogicController extends Controller
                 $u1  = $first->urutan;
                 $u2  = $pLast->urutan;
                 $key = $u1 < $u2 ? 'ponakan prunan' : 'ponakan';
-                return $relations[$key][$first->gender]." {$last->nama}";
+                return $relations[$key][$gender]." {$last->nama}";
             }
         }
 
@@ -342,7 +356,7 @@ class LogicController extends Controller
         }
 
         return [
-            'relation' => "{$firstPerson} {$relationshipDescription} ",
+            'relation' => "{$firstPerson} {$relationshipDescription} {$lastPerson}",
             'detailedPath' => $detailedPath
         ];
     }
