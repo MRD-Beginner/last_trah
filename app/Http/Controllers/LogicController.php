@@ -153,6 +153,28 @@ class LogicController extends Controller
         return $node;
     }
 
+    protected function calculateActualDepth($path)
+    {
+        if (count($path) < 2) return 0;
+
+        $depth = 0;
+        $current = $path[0];
+
+        for ($i = 1; $i < count($path); $i++) {
+            $next = $path[$i];
+            
+            if ($next->parent_id == $current->id) {
+                $depth--;
+            } elseif ($current->parent_id == $next->id) {
+                $depth++;
+            }
+            
+            $current = $next;
+        }
+
+        return $depth;
+    }
+
     // HASIL HUBUNGAN
     public function relationshipResult($path) //ngaruh di hasil hubungan
     {
@@ -162,8 +184,8 @@ class LogicController extends Controller
         $gender = $first->jenis_kelamin; // Menggunakan jenis_kelamin dari model
         
         $relations = [
-            -1 => ['Laki-Laki' => 'anak laki laki ', 'Perempuan' => 'anak perempuan '],
-            1 => ['Laki-Laki' => 'bapak dari', 'Perempuan' => 'ibu dari'],
+            -1 => ['Laki-Laki' => 'adalah anak laki laki ', 'Perempuan' => 'adalah anak perempuan '],
+            1 => ['Laki-Laki' => 'adalah bapak dari', 'Perempuan' => 'adalah ibu dari'],
             2 => ['Laki-Laki' => 'putu lanang (cucu laki-laki) dari', 'Perempuan' => 'putu wedok (cucu perempuan) dari'],
             -2 => ['Laki-Laki' => 'eyang lanang (kakek) ', 'Perempuan' => 'eyang wedok (nenek) '],
             -3 => ['Laki-Laki' => 'mbah buyut lanang ', 'Perempuan' => 'mbah buyut wedok '],
@@ -211,13 +233,13 @@ class LogicController extends Controller
         //LOGIC NYA   
         // 1. Orang tua langsung
         if ($last->parent_id === $first->id) {
-            return $relations[1][$gender]. " {$last->nama}"; // Menggunakan nama bukan name
+            return "{$first->nama} " .$relations[1][$gender]. " {$last->nama}";
         }
 
         // 2. Anak langsung
         if ($first->parent_id === $last->id) {
             $urutan = $first->urutan;
-            return $relations[-1][$gender] . " ke-{$urutan} {$last->nama}";
+            return "{$first->nama} " . $relations[-1][$gender] . " ke-{$urutan} {$last->nama}";
         }
 
         // 3. Saudara kandung
@@ -225,7 +247,7 @@ class LogicController extends Controller
             if ($first->urutan < $last->urutan) {
                 return " {$first->nama} ". ($gender === 'Laki-Laki' ? 'mas dari' : 'mbak dari')." {$last->nama}" ;
             }
-            return ($gender === 'Laki-Laki' ? 'adik laki-laki dari' : 'adik perempuan dari')." {$last->nama}";
+            return "{$first->nama} " .($gender === 'Laki-Laki' ? 'adik laki-laki dari' : 'adik perempuan dari')." {$last->nama}";
         }
 
         // 4. Sepupu  (nak-sanak)
@@ -234,7 +256,7 @@ class LogicController extends Controller
             && $first->parent->parent_id === $last->parent->parent_id) {
             $grandf = $first->parent->parent; //mencari kakek/nenek
             $grandfgender = $relations[-2][$grandf->gender]; 
-            return $relations['nak-sanak'][$gender] . " {$last->nama} dari {$grandfgender}  {$grandf->nama}";
+            return "{$first->nama} " .$relations['nak-sanak'][$gender] . " {$last->nama} dari {$grandfgender}  {$grandf->nama}";
         }
        
 
@@ -244,7 +266,7 @@ class LogicController extends Controller
             && $first->parent->parent->parent_id === $last->parent->parent->parent_id) {
             $buyut = $first->parent->parent->parent;
             $buyutgender = $relations[-3][$buyut->gender];
-            return $relations['misanan'][$gender]. " {$last->nama} dari {$buyutgender} {$buyut->nama}";
+            return "{$first->nama} " .$relations['misanan'][$gender]. " {$last->nama} dari {$buyutgender} {$buyut->nama}";
         }
         // 6. Mindhoan
         if ($depth === 0 && optional($first->parent->parent->parent)->parent_id
@@ -252,31 +274,31 @@ class LogicController extends Controller
             && $first->parent->parent->parent->parent_id === $last->parent->parent->parent->parent_id) {
             $canggah = $first->parent->parent->parent->parent;
             $canggahgender = $relations[-4][$canggah->gender];
-            return $relations['mindhoan'][$gender]. " {$last->nama} dari {$canggahgender} {$canggah->nama}";
+            return "{$first->nama} " .$relations['mindhoan'][$gender]. " {$last->nama} dari {$canggahgender} {$canggah->nama}";
         }
 
         // 7. Pakde/paklek
         if ($depth === -1 && optional($last->parent)->parent_id
             && $first->parent_id === $last->parent->parent_id) {
             $key = $first->urutan < $last->parent->urutan ? 'old uncle' : 'young uncle';
-            return $relations[$key][$gender]." {$last->nama}";
+            return "{$first->nama} " .$relations[$key][$gender]." {$last->nama}";
         }
 
         // 8. Keponakan 
         if ($depth === 1 && isset($first->parent)
             && $last->parent_id === $first->parent->parent_id) {
             $key = $last->urutan < $first->parent->urutan ? 'ponakan prunan' : 'ponakan';
-            return $relations[$key][$gender]." {$last->nama}";
+            return "{$first->nama} " .$relations[$key][$gender]." {$last->nama}";
         }
 
         // 9. Cucu 
         if ($depth === 2 && $last->parent   && $last->parent->parent ) {
-            return $relations[2][$gender]. " {$last->nama}";
+            return "{$first->nama} " .$relations[2][$gender]. " {$last->nama}";
         }
 
         // 10. Kakek/Nenek 
         if ($depth === -2 && $last->parent && $last->parent->parent) {
-            return $relations[-2][$gender]. " {$last->nama}";
+            return "{$first->nama} " .$relations[-2][$gender]. " {$last->nama}";
         }
 
         //  A. Aunt/Uncle once‐removed (dan lebih)
@@ -292,7 +314,7 @@ class LogicController extends Controller
                 $u1  = $pFirst->urutan;
                 $u2  = optional($last->parent)->urutan;
                 $key = $u1 < $u2 ? 'old uncle' : 'young uncle';
-                return $relations[$key][$gender]." {$last->nama}";
+                return "{$first->nama} " .$relations[$key][$gender]." {$last->nama}";
             }
         }
 
@@ -310,14 +332,13 @@ class LogicController extends Controller
                 $u1  = $first->urutan;
                 $u2  = $pLast->urutan;
                 $key = $u1 < $u2 ? 'ponakan prunan' : 'ponakan';
-                return $relations[$key][$gender]." {$last->nama}";
+                return "{$first->nama} " .$relations[$key][$gender]." {$last->nama}";
             }
         }
 
 
 
-        // Default fallback
-        return $relations[$depth][$gender] ?? 'saudara jauh';
+        return "{$first->nama} " .$relations[$depth][$gender]." {$last->nama}" ?? 'saudara jauh';
     }
 
     // JALUR HUBUNGAN
@@ -356,32 +377,12 @@ class LogicController extends Controller
         }
 
         return [
-            'relation' => "{$firstPerson} {$relationshipDescription} {$lastPerson}",
+            'relation' => "{$firstPerson} {$relationshipDescription} ",
             'detailedPath' => $detailedPath
         ];
     }
 
-    protected function calculateActualDepth($path)
-    {
-        if (count($path) < 2) return 0;
-
-        $depth = 0;
-        $current = $path[0];
-
-        for ($i = 1; $i < count($path); $i++) {
-            $next = $path[$i];
-            
-            if ($next->parent_id == $current->id) {
-                $depth--;
-            } elseif ($current->parent_id == $next->id) {
-                $depth++;
-            }
-            
-            $current = $next;
-        }
-
-        return $depth;
-    }
+    
     
 
 }
