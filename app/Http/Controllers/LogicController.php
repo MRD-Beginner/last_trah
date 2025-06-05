@@ -355,6 +355,7 @@ class LogicController extends Controller
         }
 
         $relationshipDescription = $this->relationshipResult($path);
+        
         $detailedPath = [];
 
         for ($i = 0; $i < count($path) - 1; $i++) {
@@ -363,8 +364,8 @@ class LogicController extends Controller
         
             // 1. cek orang tua anak
             if ($next->parent_id == $current->id) {
-                $relation = ($next->gender == 'Laki-Laki') ? "putra (anak laki-laki) " : "putri (anak perempuan) ";
-                $detailedPath[] = " {$next->nama} {$relation}ke-{$next->urutan} dari {$current->nama}";
+                $relation = ($next->gender == 'Laki-Laki') ? "ayah " : "ibu ";
+                $detailedPath[] = " {$current->nama} {$relation} dari {$next->nama}";
                 continue;
             }
             // 2. cek orang tua anak (reverse)
