@@ -28,20 +28,34 @@ class LogicController extends Controller
 
             if ($person1 && $person2) {
                 // Person1 -> Person2
-                $visited = [];
-                $path = [];
-                $found = $this->dfs($person1, $person2->id, $visited, $path);
-                $relationshipDetails = $found
+                //BFS
+                // Mencari jalur dari Person 1 ke Person 2
+                $path = $this->bfs($person1, $person2->id);
+                $relationshipDetails = $path
                     ? $this->relationshipPath($path, $person1->nama, $person2->nama)
-                    : 'Tidak ada hubungan yang ditemukan.';
+                    : ['relation' => 'Tidak ada hubungan yang ditemukan.', 'detailedPath' => []];
 
-                // Person2 -> Person1 (reversed)
-                $visitedRev = [];
-                $pathRev = [];
-                $foundRev = $this->dfs($person2, $person1->id, $visitedRev, $pathRev);
-                $relationshipDetailsReversed = $foundRev
+                // Mencari jalur dari Person 2 ke Person 1
+                $pathRev = $this->bfs($person2, $person1->id);
+                $relationshipDetailsReversed = $pathRev
                     ? $this->relationshipPath($pathRev, $person2->nama, $person1->nama)
-                    : 'Tidak ada hubungan yang ditemukan.';
+                    : ['relation' => 'Tidak ada hubungan yang ditemukan.', 'detailedPath' => []];
+
+                //DFS
+                // $visited = [];
+                // $path = [];
+                // $found = $this->dfs($person1, $person2->id, $visited, $path);
+                // $relationshipDetails = $found
+                //     ? $this->relationshipPath($path, $person1->nama, $person2->nama)
+                //     : 'Tidak ada hubungan yang ditemukan.';
+
+                // // Person2 -> Person1 (reversed)
+                // $visitedRev = [];
+                // $pathRev = [];
+                // $foundRev = $this->dfs($person2, $person1->id, $visitedRev, $pathRev);
+                // $relationshipDetailsReversed = $foundRev
+                //     ? $this->relationshipPath($pathRev, $person2->nama, $person1->nama)
+                //     : 'Tidak ada hubungan yang ditemukan.';
             }
         }
         return view('public_detail', [
@@ -54,50 +68,40 @@ class LogicController extends Controller
             'path'                         => $path,
             'pathRev'                      => $pathRev,
         ]);
-        
-
-        // return [
-        //     'person1' => $person1,
-        //     'person2' => $person2,
-        //     'relationshipDetails' => $relationshipDetails,
-        //     'relationshipDetailsReversed' => $relationshipDetailsReversed,
-        //     'path' => $path ?? null,
-        //     'pathRev' => $pathRev ?? null
-        // ];
     }
 
 
-    public function dfs($current, $targetId, &$visited, &$path)
-    {
-        if (in_array($current->id, $visited)) return false;
+    // public function dfs($current, $targetId, &$visited, &$path)
+    // {
+    //     if (in_array($current->id, $visited)) return false;
     
-        $visited[] = $current->id;
-        $path[] = $current;
+    //     $visited[] = $current->id;
+    //     $path[] = $current;
     
-        if ($current->id == $targetId) return true;
+    //     if ($current->id == $targetId) return true;
     
-        // Cek ke atas
-        if ($current->parent) {
-            if ($this->dfs($current->parent, $targetId, $visited, $path)) return true;
-        }
+    //     // Cek ke atas
+    //     if ($current->parent) {
+    //         if ($this->dfs($current->parent, $targetId, $visited, $path)) return true;
+    //     }
     
-        // Cek ke bawah
-        foreach ($current->children as $child) {
-            if ($this->dfs($child, $targetId, $visited, $path)) return true;
-        }
+    //     // Cek ke bawah
+    //     foreach ($current->children as $child) {
+    //         if ($this->dfs($child, $targetId, $visited, $path)) return true;
+    //     }
     
-        // Cek ke samping 
-        if ($current->parent) {
-            foreach ($current->parent->children as $sibling) {
-                if ($sibling->id != $current->id) {
-                    if ($this->dfs($sibling, $targetId, $visited, $path)) return true;
-                }
-            }
-        }
+    //     // Cek ke samping 
+    //     if ($current->parent) {
+    //         foreach ($current->parent->children as $sibling) {
+    //             if ($sibling->id != $current->id) {
+    //                 if ($this->dfs($sibling, $targetId, $visited, $path)) return true;
+    //             }
+    //         }
+    //     }
     
-        array_pop($path);
-        return false;
-    }
+    //     array_pop($path);
+    //     return false;
+    // }
 
 
     public function bfs($start, $targetId)
@@ -364,7 +368,7 @@ class LogicController extends Controller
         
             // 1. cek orang tua anak
             if ($next->parent_id == $current->id) {
-                $relation = ($next->gender == 'Laki-Laki') ? "ayah " : "ibu ";
+                $relation = ($current->gender == 'Laki-Laki') ? "ayah " : "ibu ";
                 $detailedPath[] = " {$current->nama} {$relation} dari {$next->nama}";
                 continue;
             }
@@ -378,7 +382,7 @@ class LogicController extends Controller
         }
 
         return [
-            'relation' => "{$firstPerson} {$relationshipDescription} ",
+            'relation' => " {$relationshipDescription} ",
             'detailedPath' => $detailedPath
         ];
     }

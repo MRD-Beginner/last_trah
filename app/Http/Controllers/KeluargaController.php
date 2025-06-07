@@ -120,25 +120,35 @@ class KeluargaController extends Controller
             $person2 = Anggota_Keluarga::where('nama', $request->name2)->where('tree_id', $tree_id)->first();
     
             if ($person1 && $person2) {
-                $dfs = new \App\Http\Controllers\LogicController;
+                $logicController = new \App\Http\Controllers\LogicController;
 
+                // Arah Person1 -> Person2 BFS
+                $path1 = $logicController->bfs($person1, $person2->id);
+                $relationshipDetails = $path1
+                    ? $logicController->relationshipPath($path1, $person1->nama, $person2->nama)
+                    : ['relation' => 'Tidak ada hubungan yang ditemukan.', 'detailedPath' => []];
 
-                //arah person1 -> person2
-                $visited = [];
-                $path = [];
-                $found = $dfs->dfs($person1, $person2->id, $visited, $path);
-                $relationshipDetails = $found
-                    ? $dfs->relationshipPath($path, $person1->name, $person2->name)
-                    : 'Tidak ada hubungan yang ditemukan.';
+                // Arah Person2 -> Person1 (dibalik)
+                $path2 = $logicController->bfs($person2, $person1->id);
+                $relationshipDetailsReversed = $path2
+                    ? $logicController->relationshipPath($path2, $person2->nama, $person1->nama)
+                    : ['relation' => 'Tidak ada hubungan yang ditemukan.', 'detailedPath' => []];
+                //arah person1 -> person2 DFS
+                // $visited = [];
+                // $path = [];
+                // $found = $dfs->dfs($person1, $person2->id, $visited, $path);
+                // $relationshipDetails = $found
+                //     ? $dfs->relationshipPath($path, $person1->name, $person2->name)
+                //     : 'Tidak ada hubungan yang ditemukan.';
 
                 
-                //reversed
-                $visitedRev = [];
-                $pathRev = [];
-                $foundRev = $dfs->dfs($person2, $person1->id, $visitedRev, $pathRev);
-                $relationshipDetailsReversed = $foundRev
-                    ? $dfs->relationshipPath($pathRev, $person2->name, $person1->name)
-                    : 'Tidak ada hubungan yang ditemukan.';
+                // //reversed
+                // $visitedRev = [];
+                // $pathRev = [];
+                // $foundRev = $dfs->dfs($person2, $person1->id, $visitedRev, $pathRev);
+                // $relationshipDetailsReversed = $foundRev
+                //     ? $dfs->relationshipPath($pathRev, $person2->name, $person1->name)
+                //     : 'Tidak ada hubungan yang ditemukan.';
             }
         }
 
