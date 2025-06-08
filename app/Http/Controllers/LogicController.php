@@ -259,7 +259,10 @@ class LogicController extends Controller
             && optional($last->parent)->parent_id
             && $first->parent->parent_id === $last->parent->parent_id) {
             $grandf = $first->parent->parent; //mencari kakek/nenek
-            $grandfgender = $relations[-2][$grandf->gender]; 
+            // $grandfgender = $relations[-2][$grandf->gender];
+            // $genderKey = $grandf->gender ?? null;
+            // $grandfgender = isset($relations[-2][$genderKey]) ? $relations[-2][$genderKey] : 'kakek/neneknya';
+            $grandfgender = (strtolower($grandf->gender ?? '') === 'laki-laki') ? 'kakek' : 'nenek';
             return "{$first->nama} " .$relations['nak-sanak'][$gender] . " {$last->nama} dari {$grandfgender}  {$grandf->nama}";
         }
        
@@ -269,7 +272,9 @@ class LogicController extends Controller
             && optional($last->parent->parent)->parent_id
             && $first->parent->parent->parent_id === $last->parent->parent->parent_id) {
             $buyut = $first->parent->parent->parent;
-            $buyutgender = $relations[-3][$buyut->gender];
+            // $buyutgender = $relations[-3][$buyut->gender];
+            $genderKey = $buyut->gender ?? null;
+            $buyutgender = isset($relations[-3][$genderKey]) ? $relations[-3][$genderKey] : 'mbah buyut';
             return "{$first->nama} " .$relations['misanan'][$gender]. " {$last->nama} dari {$buyutgender} {$buyut->nama}";
         }
         // 6. Mindhoan
@@ -277,7 +282,9 @@ class LogicController extends Controller
             && optional($last->parent->parent->parent)->parent_id
             && $first->parent->parent->parent->parent_id === $last->parent->parent->parent->parent_id) {
             $canggah = $first->parent->parent->parent->parent;
-            $canggahgender = $relations[-4][$canggah->gender];
+            // $canggahgender = $relations[-4][$canggah->gender];
+            $genderKey = $canggah->gender ?? null;
+            $canggahgender = isset($relations[-4][$genderKey]) ? $relations[-4][$genderKey] : 'mbah canggah';
             return "{$first->nama} " .$relations['mindhoan'][$gender]. " {$last->nama} dari {$canggahgender} {$canggah->nama}";
         }
 
