@@ -259,10 +259,10 @@ class LogicController extends Controller
             && optional($last->parent)->parent_id
             && $first->parent->parent_id === $last->parent->parent_id) {
             $grandf = $first->parent->parent; //mencari kakek/nenek
-            // $grandfgender = $relations[-2][$grandf->gender];
-            // $genderKey = $grandf->gender ?? null;
+            // $grandfgender = $relations[-2][$grandf->jenis_kelamin];
+            // $genderKey = $grandf->jenis_kelamin ?? null;
             // $grandfgender = isset($relations[-2][$genderKey]) ? $relations[-2][$genderKey] : 'kakek/neneknya';
-            $grandfgender = (strtolower($grandf->gender ?? '') === 'laki-laki') ? 'kakek' : 'nenek';
+            $grandfgender = (strtolower($grandf->jenis_kelamin ?? '') === 'laki-laki') ? 'kakek' : 'nenek';
             return "{$first->nama} " .$relations['nak-sanak'][$gender] . " {$last->nama} dari {$grandfgender}  {$grandf->nama}";
         }
        
@@ -272,8 +272,8 @@ class LogicController extends Controller
             && optional($last->parent->parent)->parent_id
             && $first->parent->parent->parent_id === $last->parent->parent->parent_id) {
             $buyut = $first->parent->parent->parent;
-            // $buyutgender = $relations[-3][$buyut->gender];
-            $genderKey = $buyut->gender ?? null;
+            // $buyutgender = $relations[-3][$buyut->jenis_kelamin];
+            $genderKey = $buyut->jenis_kelamin ?? null;
             $buyutgender = isset($relations[-3][$genderKey]) ? $relations[-3][$genderKey] : 'mbah buyut';
             return "{$first->nama} " .$relations['misanan'][$gender]. " {$last->nama} dari {$buyutgender} {$buyut->nama}";
         }
@@ -282,8 +282,8 @@ class LogicController extends Controller
             && optional($last->parent->parent->parent)->parent_id
             && $first->parent->parent->parent->parent_id === $last->parent->parent->parent->parent_id) {
             $canggah = $first->parent->parent->parent->parent;
-            // $canggahgender = $relations[-4][$canggah->gender];
-            $genderKey = $canggah->gender ?? null;
+            // $canggahgender = $relations[-4][$canggah->jenis_kelamin];
+            $genderKey = $canggah->jenis_kelamin ?? null;
             $canggahgender = isset($relations[-4][$genderKey]) ? $relations[-4][$genderKey] : 'mbah canggah';
             return "{$first->nama} " .$relations['mindhoan'][$gender]. " {$last->nama} dari {$canggahgender} {$canggah->nama}";
         }
@@ -375,13 +375,13 @@ class LogicController extends Controller
         
             // 1. cek orang tua anak
             if ($next->parent_id == $current->id) {
-                $relation = ($current->gender == 'Laki-Laki') ? "ayah " : "ibu ";
+                $relation = ($current->jenis_kelamin == 'Laki-Laki') ? "ayah " : "ibu ";
                 $detailedPath[] = " {$current->nama} {$relation} dari {$next->nama}";
                 continue;
             }
             // 2. cek orang tua anak (reverse)
             elseif ($current->parent_id == $next->id) {
-                $relation = ($current->gender == 'Laki-Laki') ? "putra (anak laki-laki) " : "putri (anak perempuan) ";
+                $relation = ($current->jenis_kelamin == 'Laki-Laki') ? "putra (anak laki-laki) " : "putri (anak perempuan) ";
                 $detailedPath[] = " {$current->nama} {$relation}ke-{$current->urutan} dari {$next->nama}";
                 continue;
             }
