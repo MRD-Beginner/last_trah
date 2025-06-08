@@ -20,25 +20,25 @@ class Anggota_Keluarga extends Model
     ];
 
     // Relasi ke Tree (Satu anggota milik satu pohon keluarga)
-    public function trah()
+    public function trah(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Trah::class);
     }
 
     // Relasi ke Parent (Orang tua)
-    public function parent()
+    public function parent(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Anggota_Keluarga::class, 'parent_id');
     }
 
     // Relasi ke Children (Anak-anak)
-    public function children()
+    public function children(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Anggota_Keluarga::class, 'parent_id');
     }
 
     // Relasi ke Partner (Satu-ke-Banyak)
-    public function partners()
+    public function partners(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Partner::class, 'anggota_keluarga_id');
     }
