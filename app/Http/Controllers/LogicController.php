@@ -349,7 +349,7 @@ class LogicController extends Controller
 
 
 
-        return "{$first->nama} " .$relations[$depth][$gender]." {$last->nama}" ?? 'saudara jauh';
+        return "{$first->nama} adalah saudara jauh dari {$last->nama}";
     }
 
     // JALUR HUBUNGAN
