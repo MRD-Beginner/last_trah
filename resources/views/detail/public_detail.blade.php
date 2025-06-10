@@ -1,3 +1,8 @@
+@php
+    $isMenu = false;
+    $navbarHideToggle = false;
+@endphp
+
 @extends('layouts/contentNavbarLayout')
 
 @section('title', 'Detail Keluarga')
@@ -419,15 +424,13 @@
                             @method('PUT')
                             <div class="modal-body">
                                 <input type="hidden" name="tree_id" value="{{ $anggota->tree_id }}">
-                                <div class="row">
+                                <div class="row g-4">
                                     <div class="col mb-4">
                                         <label for="nama_anggota_keluarga_edit" class="form-label">Nama</label>
                                         <input type="text" id="nama_anggota_keluarga_edit"
                                             name="nama_anggota_keluarga_edit" class="form-control"
                                             placeholder="Nama Lengkap" value="{{ $anggota->nama }}" required>
                                     </div>
-                                </div>
-                                <div class="row g-4">
                                     <div class="col mb-4">
                                         <label for="jenis_kelamin_edit" class="form-label">Jenis Kelamin</label>
                                         <select id="jenis_kelamin_edit" name="jenis_kelamin_edit" class="form-select"
@@ -440,20 +443,32 @@
                                             </option>
                                         </select>
                                     </div>
-                                    <div class="col mb-0">
+                                </div>
+                                <div class="row g-4">
+                                    <div class="col mb-4">
                                         <label for="tanggal_lahir_edit" class="form-label">Tanggal Lahir</label>
                                         <input type="date" id="tanggal_lahir_edit" name="tanggal_lahir_edit"
                                             class="form-control" value="{{ $anggota->tanggal_lahir }}">
+                                    </div>
+                                    <div class="col mb-4">
+                                        <label for="urutan_edit" class="form-label">Urutan</label>
+                                        <select id="urutan_edit" name="urutan_edit" class="form-select" required>
+                                            @for ($i = 1; $i <= 14; $i++)
+                                                <option value="{{ $i }}"
+                                                    {{ $anggota->urutan == $i ? 'selected' : '' }}>{{ $i }}
+                                                </option>
+                                            @endfor
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="row g-4">
                                     <div class="col mb-4">
                                         <label for="parent_id_edit" class="form-label">Orang Tua</label>
-                                        <select id="parent_id_edit" name="parent_id_edit" class="form-select">
+                                        <select id="parent_id_edit" name="parent_id_edit" class="form-select" onload="loadPartnersEdit(this.value)">
                                             <option value="">Pilih Orang Tua</option>
                                             @foreach ($existingMembers as $member)
                                                 <option value="{{ $member->id }}"
-                                                    {{ $anggota->parent_id == $member->id || old('parent_id') == $member->id ? 'selected' : '' }}>
+                                                    {{ $anggota->parent_id == $member->id ? 'selected' : '' }}>
                                                     {{ $member->nama }}
                                                     @if ($member->jenis_kelamin === 'Laki-Laki')
                                                         (Pak)
@@ -464,14 +479,21 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div class="col mb-0">
-                                        <label for="urutan_edit" class="form-label">Urutan</label>
-                                        <select id="urutan_edit" name="urutan_edit" class="form-select" required>
-                                            @for ($i = 1; $i <= 14; $i++)
-                                                <option value="{{ $i }}"
-                                                    {{ $anggota->urutan == $i ? 'selected' : '' }}>{{ $i }}
-                                                </option>
-                                            @endfor
+
+                                    <div class="col mb-4">
+                                        <label for="parent2_id_edit" class="form-label">Orang Tua 2 (Pasangan)</label>
+                                        <select id="parent2_id_edit" name="parent2_id" class="form-select">
+                                            <option value="">Pilih Pasangan</option>
+                                            @if ($anggota->parent_partner_id)
+                                                @php
+                                                    $partner = $pasangan_keluarga->firstWhere('id', $anggota->parent_partner_id);
+                                                @endphp
+                                                @if ($partner)
+                                                    <option value="{{ $partner->id }}" selected>
+                                                        {{ $partner->nama }}
+                                                    </option>
+                                                @endif
+                                            @endif
                                         </select>
                                     </div>
                                 </div>
@@ -1244,7 +1266,7 @@
                                 </div>
                             </div>
 
-                            
+
                         </form>
 
 
@@ -1614,91 +1636,65 @@
             updateTable();
         });
 
-        function upload() {
-            const fileUploadInput = document.querySelector('.file-uploader');
-            const image = fileUploadInput.files[0];
-
-            // Check if file was selected
-            if (!image) {
-                return alert('Please select an image file!');
-            }
-
-            // Validate file type
-            if (!image.type.includes('image')) {
-                return alert('Only images are allowed!');
-            }
-
-            // Validate file size (10MB)
-            if (image.size > 10_000_000) {
-                return alert('Maximum upload size is 10MB!');
-            }
-
-            const fileReader = new FileReader();
-            fileReader.readAsDataURL(image);
-
-            fileReader.onload = (fileReaderEvent) => {
-                const profilePicture = document.querySelector('.image-preview');
-                profilePicture.src = fileReaderEvent.target.result;
-                profilePicture.style.display = 'block'; // Show the image
-            }
-        }
-
-        function uploadpartner() {
-            const fileUploadInput = document.querySelector('.file-uploader-partner');
-            const image = fileUploadInput.files[0];
-
-            // Check if file was selected
-            if (!image) {
-                return alert('Please select an image file!');
-            }
-
-            // Validate file type
-            if (!image.type.includes('image')) {
-                return alert('Only images are allowed!');
-            }
-
-            // Validate file size (10MB)
-            if (image.size > 10_000_000) {
-                return alert('Maximum upload size is 10MB!');
-            }
-
-            const fileReader = new FileReader();
-            fileReader.readAsDataURL(image);
-
-            fileReader.onload = (fileReaderEvent) => {
-                const profilePicture = document.querySelector('.image-partner-preview');
-                profilePicture.src = fileReaderEvent.target.result;
-                profilePicture.style.display = 'block'; // Show the image
-            }
-        }
-
-        function edit_upload() {
-            const fileUploadInput = document.querySelector('.edit-file-uploader');
-            const image = fileUploadInput.files[0];
-
-            // Check if file was selected
-            if (!image) {
-                return alert('Please select an image file!');
-            }
-
-            // Validate file type
-            if (!image.type.includes('image')) {
-                return alert('Only images are allowed!');
-            }
-
-            // Validate file size (10MB)
-            if (image.size > 10_000_000) {
-                return alert('Maximum upload size is 10MB!');
-            }
-
-            const fileReader = new FileReader();
-            fileReader.readAsDataURL(image);
-
-            fileReader.onload = (fileReaderEvent) => {
-                const profilePicture = document.querySelector('.edit-image-preview');
-                profilePicture.src = fileReaderEvent.target.result;
-                profilePicture.style.display = 'block'; // Show the image
-            }
-        }
     </script>
+
+   <script>
+// Data pasangan untuk form edit
+const partnersDataEdit = {
+    @foreach ($existingMembers as $member)
+        "{{ $member->id }}": [
+            @foreach ($member->partners as $partner)
+                {
+                    id: "{{ $partner->id }}",
+                    nama: "{{ $partner->nama }}",
+                    jenis_kelamin: "{{ $partner->jenis_kelamin }}"
+                },
+            @endforeach
+        ],
+    @endforeach
+};
+
+function loadPartnersEdit() {
+    const parent1Select = document.getElementById('parent_id_edit');
+    const parent2Select = document.getElementById('parent2_id_edit');
+    const selectedId = parent1Select.value;
+
+    // Reset partner dropdown
+    parent2Select.innerHTML = '<option value="">Pilih Pasangan</option>';
+    parent2Select.disabled = true;
+
+    if (!selectedId) return;
+
+    // Enable and load partners if available
+    const partners = partnersDataEdit[selectedId];
+    if (partners && partners.length > 0) {
+        parent2Select.disabled = false;
+
+        partners.forEach(partner => {
+            const option = document.createElement('option');
+            option.value = partner.id;
+            option.textContent =
+                `${partner.nama} (${partner.jenis_kelamin === 'Laki-Laki' ? 'Pak' : 'Ibu'})`;
+
+            // Set selected jika ini adalah pasangan yang sudah ada
+            if ("{{ $anggota->parent_partner_id }}" == partner.id) {
+                option.selected = true;
+            }
+
+            parent2Select.appendChild(option);
+        });
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Panggil saat pertama kali load
+    loadPartnersEdit();
+    
+    // Tambahkan event listener untuk perubahan
+    document.getElementById('parent_id_edit').addEventListener('change', loadPartnersEdit);
+});
+</script>
+
+    
 @endsection

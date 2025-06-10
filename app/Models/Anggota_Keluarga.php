@@ -16,7 +16,7 @@ class Anggota_Keluarga extends Model
     protected $fillable = [
         'nama', 'jenis_kelamin', 'tanggal_lahir', 
         'status_kehidupan', 'tanggal_kematian', 'alamat',
-        'photo', 'urutan', 'tree_id', 'parent_id'
+        'photo', 'urutan', 'tree_id', 'parent_id','parent_partner_id'
     ];
 
     // Relasi ke Tree (Satu anggota milik satu pohon keluarga)

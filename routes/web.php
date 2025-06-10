@@ -63,6 +63,10 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
         ->name('keluarga.check.pass');
 });
 
+Route::get('detail/public/data/keluarga', function () {
+        return view('detail.detaill');
+    });
+
 Route::get('keluarga/detail/public/{id}', [KeluargaController::class, 'detail_public'])->name('keluarga.detail.public');
 
 Route::get('keluarga/detail/private/{id}', [KeluargaController::class, 'detail_private'])->name('keluarga.detail.private');

@@ -42,7 +42,7 @@
     <div class="modal fade" id="MemberModal{{ $member->id }}" tabindex="-1" aria-labelledby="memberModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
+            <div class="modal-content" style="min-height: 300px; max-height: 500px;">
                 <div class="modal-body text-center pb-4">
                     <!-- Profile Image -->
                     @if ($member->jenis_kelamin == 'Laki-Laki')
@@ -85,66 +85,104 @@
                         <!-- Biodata Tab -->
                         <div class="tab-pane fade show active" id="bio-{{ $member->id }}" role="tabpanel"
                             aria-labelledby="bio-tab">
-                            <h6 class="text-center mb-3">{{ $member->nama }}</h6>
-                            <div class="d-flex align-items-center mb-2">
-                                <i class="bi bi-calendar me-2"></i>
-                                <span>Lahir:
-                                    {{ \Carbon\Carbon::parse($member->tanggal_lahir)->format('d-m-Y') }}</span>
+                            <div class="row g-4">
+                                <div class="col mb-4">
+                                    <label for="nama_anggota_keluarga" class="form-label">Nama</label>
+                                    <input type="text" id="nama_anggota_keluarga" name="nama_anggota_keluarga"
+                                        class="form-control" placeholder="Nama Lengkap" readonly
+                                        value="{{ $member->nama }}">
+                                </div>
+                                <div class="col mb-4">
+                                    <label for="tanggal_lahir" class="form-label">Tanggal Lahir</label>
+                                    <input type="text" id="nama_anggota_keluarga" name="nama_anggota_keluarga"
+                                        class="form-control" readonly
+                                        value="{{ \Carbon\Carbon::parse($member->tanggal_lahir)->format('d-m-Y') }}">
+                                </div>
                             </div>
-                            <div class="d-flex align-items-center mb-2">
-                                <i class="bi bi-gender-ambiguous me-2"></i>
-                                <span>Jenis Kelamin: {{ $member->jenis_kelamin }}</span>
-                            </div>
-                            <div class="d-flex align-items-center mb-2">
-                                <i class="bi bi-gender-ambiguous me-2"></i>
-                                <span>Anak Ke: {{ $member->urutan }}</span>
-                            </div>
-                            <div class="d-flex align-items-center mb-2">
-                                <i class="bi bi-gender-ambiguous me-2"></i>
+                            <div class="row g-4 mb-4">
                                 @if ($member->parent)
-                                <span>Anak Dari : </span> 
-                                    <a href="#" class="border-none p-0 m-0 text-decoration-none bg-primary-hover" data-bs-toggle="modal"
-                                        data-bs-target="#MemberModal{{ $member->parent->id }}">
-                                         {{ $member->parent->nama }}
-                                    </a>
+                                    <div class="col">
+                                        <label for="nama_anggota_keluarga" class="form-label">Orang Tua 1</label>
+                                        <div class="form-control bg-primary-hover"
+                                            style="cursor: pointer; border: 1px solid #ced4da; padding: 0.375rem 0.75rem;"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#MemberModal{{ $member->parent->id }}">
+                                            {{ $member->parent->nama }}
+                                        </div>
+                                    </div>
+                                @endif
+                                @if ($member->parent)
+                                    <div class="col">
+                                        <label for="nama_anggota_keluarga" class="form-label">Orang Tua 1</label>
+                                        <div class="form-control bg-primary-hover"
+                                            style="cursor: pointer; border: 1px solid #ced4da; padding: 0.375rem 0.75rem;"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#MemberModal{{ $member->parent->id }}">
+                                            {{ $member->parent->nama }}
+                                        </div>
+                                    </div>
                                 @endif
                             </div>
-                            @if ($member->photo)
-                                <div class="d-flex align-items-center">
-                                    <i class="bi bi-image me-2"></i>
-                                    <a href="{{ $member->photo }}" target="_blank" class="badge badge-primary text-black">Buka Tautan</a>
+                            <div class="row g-4">
+                                <div class="col mb-4">
+                                    <label for="nama_anggota_keluarga" class="form-label">Anak Ke</label>
+                                    <input type="text" id="nama_anggota_keluarga" name="nama_anggota_keluarga"
+                                        class="form-control" placeholder="Nama Lengkap" readonly
+                                        value="{{ $member->urutan }}">
                                 </div>
-                            @endif
+                            </div>
+                            <div class="row g-4">
+                                <div class="col mb-4">
+                                    <label for="alamat" class="form-label">Alamat</label>
+                                    <textarea class="form-control" name="alamat" readonly>{{ $member->alamat }}</textarea>
+                                </div>
+                            </div>
+                            <div class="row g-4">
+                                @if ($member->photo)
+                                    <div class="col">
+                                        <label for="nama_anggota_keluarga" class="form-label">Kontak</label>
+                                        <div class="form-control bg-primary-hover d-flex align-items-center justify-content-between"
+                                            style="cursor: pointer; border: 1px solid #ced4da; padding: 0.5rem 1rem;"
+                                            onclick="window.open('{{ $member->photo }}', '_blank')">
+                                            <span>Buka Foto</span>
+                                            <i class="bx bx-link-external" style="font-size: 1.1rem;"></i>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
                         </div>
 
                         <!-- Family Tab -->
                         <div class="tab-pane fade" id="family-{{ $member->id }}" role="tabpanel"
                             aria-labelledby="family-tab">
-                            @if ($member->partners->count() > 0)
-                                <div class="mb-3">
-                                    <h6 class="d-flex align-items-center">
-                                        <i class="bi bi-heart me-2"></i>Pasangan
-                                    </h6>
-                                    <div>
+                            <div class="mb-3">
+                                @if ($member->partners->count() > 0)
+                                <h6 class="d-flex align-items-center">
+                                    <i class="bi bi-heart me-2"></i>Pasangan
+                                </h6>
+                                    <div class="d-flex flex-wrap gap-2">
                                         @foreach ($member->partners as $partner)
-                                            <a href="#" class="text-decoration-none me-1" data-bs-toggle="modal"
+                                            <div class="form-control bg-primary-hover"
+                                                style="cursor: pointer; border: 1px solid #ced4da; padding: 0.375rem 0.75rem;"
+                                                data-bs-toggle="modal"
                                                 data-bs-target="#PartnerModal{{ $partner->id }}">
                                                 {{ $partner->nama }}
-                                            </a>
-                                            @if (!$loop->last)
-                                                ,
-                                            @endif
+                                            </div>
                                         @endforeach
                                     </div>
-                                </div>
-                            @endif
+                                @else
+                                <p class="text-center">
+                                    Data pasangan belum ditambahkan
+                                </p>
+                                @endif
+                            </div>
                         </div>
 
                         <!-- Notes Tab -->
                         <div class="tab-pane fade" id="notes-{{ $member->id }}" role="tabpanel"
                             aria-labelledby="notes-tab">
-                            @if ($member->children->count() > 0)
-                                <div>
+                            <div>
+                                @if ($member->children->count() > 0)
                                     <h6 class="d-flex align-items-center">
                                         <i class="bi bi-people me-2"></i>Anak-anak
                                     </h6>
@@ -160,8 +198,12 @@
                                             @endif
                                         @endforeach
                                     </div>
-                                </div>
-                            @endif
+                                @else
+                                    <div class="text-muted text-center">
+                                        <i class="bi bi-info-circle me-1"></i>Belum memiliki anak
+                                    </div>
+                                @endif
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -171,17 +213,20 @@
 
     @if ($member->partners->count() > 0)
         @foreach ($member->partners as $partner)
-            <div class="modal fade" id="PartnerModal{{ $partner->id }}" tabindex="-1" aria-labelledby="partnerModalLabel" aria-hidden="true">
+            <div class="modal fade" id="PartnerModal{{ $partner->id }}" tabindex="-1"
+                aria-labelledby="partnerModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
+                    <div class="modal-content" style="min-height: 300px;">
                         <div class="modal-body text-center pb-4">
                             <!-- Profile Image -->
                             @if ($partner->jenis_kelamin == 'Laki-Laki')
-                                <img src="{{ asset('assets/img/placeholder/male.png') }}" alt="Foto Default Laki-laki"
+                                <img src="{{ asset('assets/img/placeholder/male.png') }}"
+                                    alt="Foto Default Laki-laki"
                                     class="rounded-circle position-absolute top-0 start-50 translate-middle"
                                     style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%;">
                             @elseif ($partner->jenis_kelamin == 'Perempuan')
-                                <img src="{{ asset('assets/img/placeholder/female.png') }}" alt="Foto Default Perempuan"
+                                <img src="{{ asset('assets/img/placeholder/female.png') }}"
+                                    alt="Foto Default Perempuan"
                                     class="rounded-circle position-absolute top-0 start-50 translate-middle"
                                     style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%;">
                             @endif
@@ -190,22 +235,22 @@
                             <div class="nav nav-tabs nav-justified mt-5 mb-3" role="tablist">
                                 <div class="nav-item" role="presentation">
                                     <button class="nav-link active" id="partner-bio-tab" data-bs-toggle="tab"
-                                        data-bs-target="#partner-bio-{{ $partner->id }}" type="button" role="tab"
-                                        aria-controls="partner-bio" aria-selected="true">
+                                        data-bs-target="#partner-bio-{{ $partner->id }}" type="button"
+                                        role="tab" aria-controls="partner-bio" aria-selected="true">
                                         Biodata
                                     </button>
                                 </div>
                                 <div class="nav-item" role="presentation">
                                     <button class="nav-link" id="partner-family-tab" data-bs-toggle="tab"
-                                        data-bs-target="#partner-family-{{ $partner->id }}" type="button" role="tab"
-                                        aria-controls="partner-family" aria-selected="false">
+                                        data-bs-target="#partner-family-{{ $partner->id }}" type="button"
+                                        role="tab" aria-controls="partner-family" aria-selected="false">
                                         Pasangan
                                     </button>
                                 </div>
                                 <div class="nav-item" role="presentation">
                                     <button class="nav-link" id="partner-children-tab" data-bs-toggle="tab"
-                                        data-bs-target="#partner-children-{{ $partner->id }}" type="button" role="tab"
-                                        aria-controls="partner-children" aria-selected="false">
+                                        data-bs-target="#partner-children-{{ $partner->id }}" type="button"
+                                        role="tab" aria-controls="partner-children" aria-selected="false">
                                         Anak
                                     </button>
                                 </div>
@@ -214,12 +259,13 @@
                             <!-- Tabs Content -->
                             <div class="tab-content text-start p-2">
                                 <!-- Biodata Tab -->
-                                <div class="tab-pane fade show active" id="partner-bio-{{ $partner->id }}" role="tabpanel"
-                                    aria-labelledby="partner-bio-tab">
+                                <div class="tab-pane fade show active" id="partner-bio-{{ $partner->id }}"
+                                    role="tabpanel" aria-labelledby="partner-bio-tab">
                                     <h6 class="text-center mb-3">{{ $partner->nama }}</h6>
                                     <div class="d-flex align-items-center mb-2">
                                         <i class="bi bi-calendar me-2"></i>
-                                        <span>Lahir: {{ \Carbon\Carbon::parse($partner->tanggal_lahir)->format('d-m-Y') }}</span>
+                                        <span>Lahir:
+                                            {{ \Carbon\Carbon::parse($partner->tanggal_lahir)->format('d-m-Y') }}</span>
                                     </div>
                                     <div class="d-flex align-items-center mb-2">
                                         <i class="bi bi-gender-ambiguous me-2"></i>
@@ -228,7 +274,8 @@
                                     @if ($partner->photo)
                                         <div class="d-flex align-items-center">
                                             <i class="bi bi-image me-2"></i>
-                                            <a href="{{ $partner->photo }}" target="_blank" class="badge badge-primary text-black">Buka Tautan</a>
+                                            <a href="{{ $partner->photo }}" target="_blank"
+                                                class="badge badge-primary text-black">Buka Tautan</a>
                                         </div>
                                     @endif
                                 </div>

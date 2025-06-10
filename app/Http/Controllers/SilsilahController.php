@@ -22,13 +22,11 @@ class SilsilahController extends Controller
             'alamat' => 'required|string|max:255',
             'urutan' => 'required|string',
             'tree_id' => 'required|string',
-            'keluarga_image' => 'nullable|image|mimes:jpeg,png,jpg',
-            'parent_id' => 'nullable|exists:anggota_keluarga,id'
+            'keluarga_image_link' => 'nullable|string',
+            'parent1_id' => 'nullable|exists:anggota_keluarga,id',
+            'parent2_id' => 'nullable',
         ]);
-        $photoPath = null;
-        if ($request->hasFile('keluarga_image')) {
-            $photoPath = $request->file('keluarga_image')->store('anggota_keluarga', 'public');
-        }
+
         $anggota_keluarga = Anggota_Keluarga::create([
             'nama' => $validated['nama_anggota_keluarga'], // Changed from 'name' to 'nama' to match migration
             'jenis_kelamin' => $validated['jenis_kelamin'],
@@ -36,10 +34,11 @@ class SilsilahController extends Controller
             'status_kehidupan' => $validated['status_kehidupan'],
             'tanggal_kematian' => $validated['tanggal_kematian'],
             'alamat' => $validated['alamat'],
-            'photo' => $photoPath, 
+            'photo' => $validated['keluarga_image_link'], 
             'urutan' => $validated['urutan'], // Added missing required field
             'tree_id' => $validated['tree_id'], // Added missing required field (adjust as needed)
-            'parent_id' => $validated['parent_id'] ?? null
+            'parent_id' => $validated['parent1_id'] ?? null,
+            'parent_partner_id' => $validated['parent2_id'] ?? null,
         ]);
 
         $anggota_keluarga -> save();
