@@ -1,3 +1,8 @@
+@php
+    $isMenu = false;
+    $navbarHideToggle = false;
+@endphp
+
 @extends('layouts/contentNavbarLayout')
 
 @section('title', 'Data Keluarga')
