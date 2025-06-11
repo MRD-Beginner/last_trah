@@ -157,23 +157,41 @@
                             aria-labelledby="family-tab">
                             <div class="mb-3">
                                 @if ($member->partners->count() > 0)
-                                <h6 class="d-flex align-items-center">
-                                    <i class="bi bi-heart me-2"></i>Pasangan
-                                </h6>
-                                    <div class="d-flex flex-wrap gap-2">
-                                        @foreach ($member->partners as $partner)
-                                            <div class="form-control bg-primary-hover"
-                                                style="cursor: pointer; border: 1px solid #ced4da; padding: 0.375rem 0.75rem;"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#PartnerModal{{ $partner->id }}">
-                                                {{ $partner->nama }}
-                                            </div>
-                                        @endforeach
+                                    <h6 class="d-flex align-items-center mb-3">
+                                        <i class="bi bi-heart me-2"></i>Pasangan
+                                    </h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center">Nama</th>
+                                                    <th class="text-center">Tanggal Lahir</th>
+                                                    <th class="text-center">Aksi</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($member->partners as $partner)
+                                                    <tr>
+                                                        <td class="text-center align-middle">{{ $partner->nama }}</td>
+                                                        <td class="text-center align-middle">
+                                                            {{ $partner->tanggal_lahir ? \Carbon\Carbon::parse($partner->tanggal_lahir)->translatedFormat('d F Y') : 'Belum diketahui' }}
+                                                        </td>
+                                                        <td class="text-center align-middle">
+                                                            <button class="btn btn-sm btn-primary"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#PartnerModal{{ $partner->id }}">
+                                                                <i class="bi bi-eye"></i> Lihat
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
                                     </div>
                                 @else
-                                <p class="text-center">
-                                    Data pasangan belum ditambahkan
-                                </p>
+                                    <p class="text-center text-muted py-3">
+                                        <i class="bi bi-info-circle me-2"></i>Data pasangan belum ditambahkan
+                                    </p>
                                 @endif
                             </div>
                         </div>
@@ -181,25 +199,40 @@
                         <!-- Notes Tab -->
                         <div class="tab-pane fade" id="notes-{{ $member->id }}" role="tabpanel"
                             aria-labelledby="notes-tab">
-                            <div>
+                            <div class="mb-4">
                                 @if ($member->children->count() > 0)
-                                    <h6 class="d-flex align-items-center">
+                                    <h6 class="d-flex align-items-center mb-3">
                                         <i class="bi bi-people me-2"></i>Anak-anak
                                     </h6>
-                                    <div>
-                                        @foreach ($member->children as $child)
-                                            <a href="#" class="text-decoration-none me-1"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#MemberModal{{ $child->id }}">
-                                                {{ $child->nama }}
-                                            </a>
-                                            @if (!$loop->last)
-                                                ,
-                                            @endif
-                                        @endforeach
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center">Nama</th>
+                                                    <th class="text-center">Urutan</th>
+                                                    <th class="text-center">Aksi</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($member->children as $child)
+                                                    <tr>
+                                                        <td class="text-center align-middle">{{ $child->nama }}</td>
+                                                        <td class="text-center align-middle">
+                                                            {{ $child->urutan ?? '-' }}</td>
+                                                        <td class="text-center align-middle">
+                                                            <button class="btn btn-sm btn-primary"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#MemberModal{{ $child->id }}">
+                                                                <i class="bi bi-eye"></i> Detail
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
                                     </div>
                                 @else
-                                    <div class="text-muted text-center">
+                                    <div class="text-muted text-center py-3">
                                         <i class="bi bi-info-circle me-1"></i>Belum memiliki anak
                                     </div>
                                 @endif

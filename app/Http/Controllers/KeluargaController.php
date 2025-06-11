@@ -108,7 +108,7 @@ class KeluargaController extends Controller
                         ->get();
         // Root member (anggota tanpa parent_id) dari trah ini saja
         $rootMember = $anggota_keluarga->whereNull('parent_id');
-        $rootPartner = $pasangan_keluarga->whereNull('anggota_keluarga_id');
+        $rootPartner = $pasangan_keluarga;
 
         $person1 = null;
         $person2 = null;
@@ -133,22 +133,6 @@ class KeluargaController extends Controller
                 $relationshipDetailsReversed = $path2
                     ? $logicController->relationshipPath($path2, $person2->nama, $person1->nama)
                     : ['relation' => 'Tidak ada hubungan yang ditemukan.', 'detailedPath' => []];
-                //arah person1 -> person2 DFS
-                // $visited = [];
-                // $path = [];
-                // $found = $dfs->dfs($person1, $person2->id, $visited, $path);
-                // $relationshipDetails = $found
-                //     ? $dfs->relationshipPath($path, $person1->name, $person2->name)
-                //     : 'Tidak ada hubungan yang ditemukan.';
-
-                
-                // //reversed
-                // $visitedRev = [];
-                // $pathRev = [];
-                // $foundRev = $dfs->dfs($person2, $person1->id, $visitedRev, $pathRev);
-                // $relationshipDetailsReversed = $foundRev
-                //     ? $dfs->relationshipPath($pathRev, $person2->name, $person1->name)
-                //     : 'Tidak ada hubungan yang ditemukan.';
             }
         }
 

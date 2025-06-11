@@ -47,9 +47,6 @@ class SilsilahController extends Controller
             ->with('success', 'Anggota keluarga berhasil ditambahkan'); // Changed message to be more specific
     }
         
-    public function edit_anggota_keluarga() {
-        
-    }
     public function update_anggota_keluarga(Request $request, $id)
     {
         $validated = $request->validate([
@@ -62,7 +59,8 @@ class SilsilahController extends Controller
             'urutan_edit' => 'required|string',
             'tree_id' => 'required|exists:trah,id',
             'keluarga_image_edit' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Perbaikan disini
-            'parent_id_edit' => 'nullable|exists:anggota_keluarga,id'
+            'parent_id_edit' => 'nullable|exists:anggota_keluarga,id',
+            'parent2_id_edit' => 'nullable'
         ]);
 
         $anggota = Anggota_Keluarga::findOrFail($id);
@@ -83,7 +81,8 @@ class SilsilahController extends Controller
             'alamat' => $validated['alamat_edit'],
             'urutan' => $validated['urutan_edit'],
             'tree_id' => $validated['tree_id'],
-            'parent_id' => $validated['parent_id_edit'] ?? null
+            'parent_id' => $validated['parent_id_edit'] ?? null,
+            'parent_partner_id' => $validated['parent2_id_edit'] ?? null,
         ]);
 
         return redirect()->back()

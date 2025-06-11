@@ -464,7 +464,8 @@
                                 <div class="row g-4">
                                     <div class="col mb-4">
                                         <label for="parent_id_edit" class="form-label">Orang Tua</label>
-                                        <select id="parent_id_edit" name="parent_id_edit" class="form-select" onload="loadPartnersEdit(this.value)">
+                                        <select id="parent_id_edit" name="parent_id_edit" class="form-select"
+                                            onload="loadPartnersEdit(this.value)">
                                             <option value="">Pilih Orang Tua</option>
                                             @foreach ($existingMembers as $member)
                                                 <option value="{{ $member->id }}"
@@ -482,18 +483,14 @@
 
                                     <div class="col mb-4">
                                         <label for="parent2_id_edit" class="form-label">Orang Tua 2 (Pasangan)</label>
-                                        <select id="parent2_id_edit" name="parent2_id" class="form-select">
+                                        <select id="parent2_id_edit" name="parent2_id_edit" class="form-select">
                                             <option value="">Pilih Pasangan</option>
-                                            @if ($anggota->parent_partner_id)
-                                                @php
-                                                    $partner = $pasangan_keluarga->firstWhere('id', $anggota->parent_partner_id);
-                                                @endphp
-                                                @if ($partner)
-                                                    <option value="{{ $partner->id }}" selected>
-                                                        {{ $partner->nama }}
-                                                    </option>
-                                                @endif
-                                            @endif
+                                            @foreach ($rootPartner as $partner)
+                                                <option value="{{ $partner->id }}"
+                                                    {{ $anggota->parent_partner_id == $partner->id ? 'selected' : '' }}>
+                                                    {{ $partner->nama }}
+                                                </option>
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>
@@ -1110,12 +1107,13 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
+                                                        @php $counter = 1; @endphp
                                                         @foreach ($anggota_keluarga as $anggota)
                                                             @foreach ($anggota->partners as $partner)
                                                                 <tr class="odd">
                                                                     <td class="text-center col-no"
                                                                         style="overflow: hidden;">
-                                                                        {{ $loop->iteration }}
+                                                                        {{ $counter++ }}
                                                                     </td>
                                                                     <td class="" style="overflow: hidden">
                                                                         <div class="ellipsis text-center">
@@ -1129,7 +1127,7 @@
                                                                     </td>
                                                                     <td class="" style="overflow: hidden">
                                                                         <div class="ellipsis text-center">
-                                                                            {{ \Carbon\Carbon::parse($partner->tanggal_lahir)->translatedFormat('d-F-Y') }}
+                                                                            {{ $partner->tanggal_lahir ? \Carbon\Carbon::parse($partner->tanggal_lahir)->translatedFormat('d-F-Y') : 'Belum diketahui' }}
                                                                         </div>
                                                                     </td>
                                                                     <td class="" style="overflow: hidden">
@@ -1635,66 +1633,65 @@
             // Inisialisasi tabel
             updateTable();
         });
-
     </script>
 
-   <script>
-// Data pasangan untuk form edit
-const partnersDataEdit = {
-    @foreach ($existingMembers as $member)
-        "{{ $member->id }}": [
-            @foreach ($member->partners as $partner)
-                {
-                    id: "{{ $partner->id }}",
-                    nama: "{{ $partner->nama }}",
-                    jenis_kelamin: "{{ $partner->jenis_kelamin }}"
-                },
+    <script>
+        // Data pasangan untuk form edit
+        const partnersDataEdit = {
+            @foreach ($existingMembers as $member)
+                "{{ $member->id }}": [
+                    @foreach ($member->partners as $partner)
+                        {
+                            id: "{{ $partner->id }}",
+                            nama: "{{ $partner->nama }}",
+                            jenis_kelamin: "{{ $partner->jenis_kelamin }}"
+                        },
+                    @endforeach
+                ],
             @endforeach
-        ],
-    @endforeach
-};
+        };
 
-function loadPartnersEdit() {
-    const parent1Select = document.getElementById('parent_id_edit');
-    const parent2Select = document.getElementById('parent2_id_edit');
-    const selectedId = parent1Select.value;
+        function loadPartnersEdit() {
+            const parent1Select = document.getElementById('parent_id_edit');
+            const parent2Select = document.getElementById('parent2_id_edit');
+            const selectedId = parent1Select.value;
 
-    // Reset partner dropdown
-    parent2Select.innerHTML = '<option value="">Pilih Pasangan</option>';
-    parent2Select.disabled = true;
+            // Reset partner dropdown
+            parent2Select.innerHTML = '<option value="">Pilih Pasangan</option>';
+            parent2Select.disabled = true;
 
-    if (!selectedId) return;
+            if (!selectedId) return;
 
-    // Enable and load partners if available
-    const partners = partnersDataEdit[selectedId];
-    if (partners && partners.length > 0) {
-        parent2Select.disabled = false;
+            // Enable and load partners if available
+            const partners = partnersDataEdit[selectedId];
+            if (partners && partners.length > 0) {
+                parent2Select.disabled = false;
 
-        partners.forEach(partner => {
-            const option = document.createElement('option');
-            option.value = partner.id;
-            option.textContent =
-                `${partner.nama} (${partner.jenis_kelamin === 'Laki-Laki' ? 'Pak' : 'Ibu'})`;
+                partners.forEach(partner => {
+                    const option = document.createElement('option');
+                    option.value = partner.id;
+                    option.textContent =
+                        `${partner.nama} (${partner.jenis_kelamin === 'Laki-Laki' ? 'Pak' : 'Ibu'})`;
 
-            // Set selected jika ini adalah pasangan yang sudah ada
-            if ("{{ $anggota->parent_partner_id }}" == partner.id) {
-                option.selected = true;
+                    // Set selected jika ini adalah pasangan yang sudah ada
+                    if ("{{ $anggota->parent_partner_id }}" == partner.id) {
+                        option.selected = true;
+                    }
+
+                    parent2Select.appendChild(option);
+                });
             }
+        }
 
-            parent2Select.appendChild(option);
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Panggil saat pertama kali load
+            loadPartnersEdit();
+
+            // Tambahkan event listener untuk perubahan
+            document.getElementById('parent_id_edit').addEventListener('change', loadPartnersEdit);
         });
-    }
-}
+    </script>
 
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', function() {
-    // Panggil saat pertama kali load
-    loadPartnersEdit();
-    
-    // Tambahkan event listener untuk perubahan
-    document.getElementById('parent_id_edit').addEventListener('change', loadPartnersEdit);
-});
-</script>
 
-    
 @endsection
