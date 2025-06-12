@@ -1,3 +1,9 @@
+@php
+    $isMenu = false;
+    $navbarHideToggle = false;
+@endphp
+
+
 @extends('layouts/contentNavbarLayout')
 
 @section('title', 'Data Keluarga')
@@ -298,11 +304,13 @@
                   <div class="ellipsis" style="justify-content: center !important;">
                       @if($Trah->visibility === 'public')
                         <a class="badge bg-label-success m-1 py-1" href="{{ route('keluarga.detail.public', $Trah->id) }}">
-                          <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                          {{-- <i class="fa-solid fa-arrow-up-right-from-square"></i> --}}
+                          Detail
                         </a>
                       @else
                         <a class="badge bg-label-success m-1 py-1" data-bs-toggle="modal" data-bs-target="#passwordModal{{ $Trah->id }}">
-                          <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                          {{-- <i class="fa-solid fa-arrow-up-right-from-square"></i> --}}
+                          Detail
                         </a>
                       @endif
                       <a class="badge bg-label-warning m-1 py-1" data-bs-toggle="modal" data-bs-target="#editModal{{ $Trah->id }}"><i class="fa-solid fa-pencil"></i></a>

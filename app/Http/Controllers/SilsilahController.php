@@ -184,7 +184,7 @@ class SilsilahController extends Controller
     return redirect()->back()->with('success', 'Data pasangan berhasil diperbarui');
     }
     public function delete_pasangan_anggota_keluarga($id) {
-          $partner = Partner::findOrFail($id);
+        $partner = Partner::findOrFail($id);
 
         $partner->delete();
 

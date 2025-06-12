@@ -19,7 +19,7 @@ class AdminController extends Controller
         if ($user->role === 'admin') {
             return redirect()->route('admin.dashboard');
         }if ($user->role === 'user') {
-            return redirect()->route('user.dashboard');
+            return redirect()->route('user.keluarga');
         }
     }
 

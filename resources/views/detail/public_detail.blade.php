@@ -166,7 +166,7 @@
         }
 
         .container {
-            max-width: 100%;
+            /* max-width: 100%; */
             flex-wrap: wrap;
             padding: 16px;
         }
@@ -797,6 +797,36 @@
                                     <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                                 </div>
                             </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="deletePartnerMemberModal{{ $partner->id }}" data-bs-backdrop="static"
+                    tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header text-center">
+                                <h5 class="modal-title" id="backDropModalTitle">Hapus Pasangan Ini?</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body justify-content-center text-center">
+                                <i class="fa-solid fa-triangle-exclamation fa-beat"
+                                    style="color: #FF0000; font-size: 100px"></i>
+                                <span class="d-block mt-5">Anda yakin ingin menghapus pasangan
+                                    {{ $partner->nama_pasangan_anggota_keluarga }}? Data yang terhapus tidak dapat
+                                    dikembalikan.</span>
+                            </div>
+                            <div class="modal-footer justify-content-center">
+                                <form method="POST"
+                                    action="{{ route('pasangan.anggota.keluarga.delete', $partner->id) }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Batal</button>
+                                    <button type="submit" class="btn btn-danger">Hapus</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1635,7 +1665,7 @@
         });
     </script>
 
-    <script>
+    {{-- <script>
         // Data pasangan untuk form edit
         const partnersDataEdit = {
             @foreach ($existingMembers as $member)
@@ -1691,7 +1721,7 @@
             // Tambahkan event listener untuk perubahan
             document.getElementById('parent_id_edit').addEventListener('change', loadPartnersEdit);
         });
-    </script>
+    </script> --}}
 
 
 @endsection

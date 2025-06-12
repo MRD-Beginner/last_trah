@@ -134,17 +134,26 @@
                     </a>
                 </li>
                 <li>
+                  @if(auth()->user()->role == 'admin')
                     <a class="dropdown-item d-flex align-items-center" href="{{ route('admin.keluarga') }}">
                         <i class="bx bx-group me-2"></i>
                         <span>Data Keluarga</span>
                     </a>
-                </li>
-                <li>
-                    <a class="dropdown-item d-flex align-items-center" href="{{ route('admin.user.management') }}">
-                        <i class="bx bx-cog me-2"></i>
-                        <span>Data User</span>
+                  @else
+                   <a class="dropdown-item d-flex align-items-center" href="{{ route('user.keluarga') }}">
+                        <i class="bx bx-group me-2"></i>
+                        <span>Data Keluarga</span>
                     </a>
+                  @endif
                 </li>
+                @if(auth()->user()->role == 'admin')
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center" href="{{ route('admin.user.management') }}">
+                            <i class="bx bx-cog me-2"></i>
+                            <span>Data User</span>
+                        </a>
+                    </li>
+                @endif
                 <div class="dropdown-divider my-1"></div>
         </li>
         <li>

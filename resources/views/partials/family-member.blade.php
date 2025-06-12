@@ -19,13 +19,34 @@
 
         <div class="d-flex">
             @if ($member->jenis_kelamin == 'Laki-Laki')
-                <img src="{{ asset('assets/img/placeholder/male.png') }}" alt="Foto Default Laki-laki"
-                    style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%;">
+                <img src="{{ asset('assets/img/placeholder/laki laki jawa.jpg') }}" alt="Foto Default Laki-laki"
+                    style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%;
+                    @if ($member->status_kehidupan == 'Wafat') filter: grayscale(100%); @endif">
             @elseif ($member->jenis_kelamin == 'Perempuan')
-                <img src="{{ asset('assets/img/placeholder/female.png') }}" alt="Foto Default Perempuan"
-                    style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%;">
+                <img src="{{ asset('assets/img/placeholder/perempuan jawa.jpg') }}" alt="Foto Default Perempuan"
+                    style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%;
+                    @if ($member->status_kehidupan == 'Wafat') filter: grayscale(100%); @endif">
             @endif
         </div>
+
+        <small
+            style="
+            position: absolute; 
+            background-color: {{ $member->jenis_kelamin == 'Laki-Laki' ? '#3b82f6' : '#ec4899' }};
+            color: white;
+            font-weight: bold;
+            padding: 3px 8px; 
+            border-radius: 9999px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            font-size: 0.75rem;
+            line-height: 1;
+            min-width: 24px;
+            text-align: center;
+            z-index: 100;
+            ">{{ $member->urutan }}
+        </small>
+
+
         <span class="capitalize"
             style="display: inline-block; max-width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $member->nama }}</span>
     </a>
@@ -46,14 +67,22 @@
                 <div class="modal-body text-center pb-4">
                     <!-- Profile Image -->
                     @if ($member->jenis_kelamin == 'Laki-Laki')
-                        <img src="{{ asset('assets/img/placeholder/male.png') }}" alt="Foto Default Laki-laki"
+                        <img src="{{ asset('assets/img/placeholder/laki laki jawa.jpg') }}" alt="Foto Default Laki-laki"
                             class="rounded-circle position-absolute top-0 start-50 translate-middle"
-                            style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%;">
+                            style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%; 
+                            @if ($member->status_kehidupan == 'Wafat') filter: grayscale(100%); @endif
+                            ">
                     @elseif ($member->jenis_kelamin == 'Perempuan')
-                        <img src="{{ asset('assets/img/placeholder/female.png') }}" alt="Foto Default Perempuan"
+                        <img src="{{ asset('assets/img/placeholder/perempuan jawa.jpg') }}" alt="Foto Default Perempuan"
                             class="rounded-circle position-absolute top-0 start-50 translate-middle"
-                            style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%;">
+                            style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%;
+                            @if ($member->status_kehidupan == 'Wafat') filter: grayscale(100%); @endif
+                            ">
                     @endif
+
+                    <div class="mt-10">
+                        {{ $member->nama }}
+                    </div>
 
                     <!-- Tabs Navigation (using div instead of ul/li) -->
                     <div class="nav nav-tabs nav-justified mt-5 mb-3" role="tablist">
@@ -253,15 +282,19 @@
                         <div class="modal-body text-center pb-4">
                             <!-- Profile Image -->
                             @if ($partner->jenis_kelamin == 'Laki-Laki')
-                                <img src="{{ asset('assets/img/placeholder/male.png') }}"
+                                <img src="{{ asset('assets/img/placeholder/laki laki jawa.jpg') }}"
                                     alt="Foto Default Laki-laki"
                                     class="rounded-circle position-absolute top-0 start-50 translate-middle"
-                                    style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%;">
+                                    style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%;
+                                    @if ($member->status_kehidupan == 'Wafat') filter: grayscale(100%); @endif
+                            ">
                             @elseif ($partner->jenis_kelamin == 'Perempuan')
-                                <img src="{{ asset('assets/img/placeholder/female.png') }}"
+                                <img src="{{ asset('assets/img/placeholder/perempuan jawa.jpg') }}"
                                     alt="Foto Default Perempuan"
                                     class="rounded-circle position-absolute top-0 start-50 translate-middle"
-                                    style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%;">
+                                    style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%;
+                                    @if ($member->status_kehidupan == 'Wafat') filter: grayscale(100%); @endif
+                            ">
                             @endif
 
                             <!-- Tabs Navigation -->

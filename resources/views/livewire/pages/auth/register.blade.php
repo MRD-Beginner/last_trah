@@ -13,7 +13,7 @@ new #[Layout('layouts.guest')] class extends Component
     public string $name = '';
     public string $email = '';
     public string $password = '';
-    public string $password_confirmation = '';
+    // Hapus ini: public string $password_confirmation = '';
 
     /**
      * Handle an incoming registration request.
@@ -23,7 +23,7 @@ new #[Layout('layouts.guest')] class extends Component
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
+            'password' => ['required', 'string', Rules\Password::defaults()], // Hapus 'confirmed'
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
@@ -34,11 +34,11 @@ new #[Layout('layouts.guest')] class extends Component
 
         Auth::login($user);
 
-        $this->redirect(route('user.dashboard'), navigate: true);
+        $this->redirect(route('user.keluarga'), navigate: true);
     }
 }; ?>
 
-<div class="container p-2 md:m-24 bg-[#ffffff] flex flex-col md:flex-row w-full shadow-md">
+<div class="container p-2 px-20 md:m-24 bg-[#ffffff] flex flex-col md:flex-row w-full shadow-md">
     <!-- Left Column - Image -->
     <div class="w-full md:w-3/5 bg-gray-100 hidden md:flex">
         <a href="{{ url('/') }}" class="w-full h-full">
@@ -88,26 +88,6 @@ new #[Layout('layouts.guest')] class extends Component
                     <x-input-error :messages="$errors->get('password')" class="mt-2" />
                 </div>
 
-                <!-- Confirm Password -->
-                <div>
-                    <x-input-label for="password_confirmation" :value="__('Konfirmasi Password')" />
-                    <x-text-input wire:model="password_confirmation" id="password_confirmation" 
-                        class="block mt-1 w-full" type="password" name="password_confirmation" 
-                        required autocomplete="new-password" />
-                    <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-                </div>
-
-                <!-- Terms Checkbox -->
-                <div class="flex items-center">
-                    <input wire:model="terms" id="terms" type="checkbox"
-                        class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
-                        name="terms">
-                    <label for="terms" class="ms-2 text-sm text-gray-600">
-                        Saya menyetujui <a href="#" class="text-indigo-600 hover:text-indigo-500">syarat dan ketentuan</a>
-                    </label>
-                </div>
-                @error('terms') <div class="text-sm text-red-600 mt-1">{{ $message }}</div> @enderror
-
                 <!-- Submit Button -->
                 <div>
                     <x-primary-button class="w-full justify-center">
@@ -140,26 +120,3 @@ new #[Layout('layouts.guest')] class extends Component
         </div>
     </div>
 </div>
-
-@section('scripts')
-    <!-- Password toggle functionality -->
-    <script>
-        document.addEventListener('livewire:init', () => {
-            // Toggle password visibility
-            document.querySelectorAll('.toggle-password').forEach(toggle => {
-                toggle.addEventListener('click', function() {
-                    const input = this.closest('.input-group').querySelector('input');
-                    const icon = this.querySelector('i');
-                    
-                    if (input.type === 'password') {
-                        input.type = 'text';
-                        icon.classList.replace('bx-hide', 'bx-show');
-                    } else {
-                        input.type = 'password';
-                        icon.classList.replace('bx-show', 'bx-hide');
-                    }
-                });
-            });
-        });
-    </script>
-@endsection

@@ -17,14 +17,13 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
-        return redirect()->route('user.dashboard');
+        return redirect()->route('user.keluarga');
     });
 
-    Route::get('user/dashboard', [UserController::class, 'index'])->name('user.dashboard');
-
+    Route::get('user/data/keluarga', [UserController::class, 'keluarga'])->name('user.keluarga');
+    
     Route::get('user/profile', [ProfileController::class, 'edit'])->name('profile.edit');
 
-    Route::get('user/data/keluarga', [UserController::class, 'keluarga'])->name('user.keluarga');
 
     Route::post('user/data/keluarga/add', [KeluargaController::class, 'store_user'])->name('user.keluarga.store');
 
@@ -119,7 +118,7 @@ Route::fallback(function () {
 
     return auth()->user()->hasRole('admin')
         ? redirect()->route('admin.dashboard')
-        : redirect()->route('user.dashboard');
+        : redirect()->route('user.keluarga');
 });
 
 require __DIR__ . '/auth.php';

@@ -24,7 +24,7 @@ new #[Layout('layouts.guest')] class extends Component {
         }
 
         if (auth()->user()->hasRole('user')) {
-            return redirect()->to(route('user.dashboard') . '?t=' . time());
+            return redirect()->to(route('user.keluarga') . '?t=' . time());
         }
 
         return redirect()->intended(route('login'));
@@ -34,7 +34,7 @@ new #[Layout('layouts.guest')] class extends Component {
 <div class="container p-2 md:m-24 bg-[#ffffff] flex flex-col md:flex-row w-full shadow-md">
     <!-- Left Column - Image -->
     <div class="w-full md:w-3/5 bg-gray-100 hidden md:flex">
-        <a href="{{ url('/') }}" class="w-full h-full">
+        <a href="{{ url('/') }}" class="w-full">
             <img src="https://images.unsplash.com/photo-1733039898491-b4f469c6cd1a?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                 alt="Login Image" class="w-full h-full object-cover">
         </a>
@@ -54,7 +54,7 @@ new #[Layout('layouts.guest')] class extends Component {
             </div>
 
             <h1 class="text-4xl font-bold mb-4 text-center md:text-left" style="font-family:Viga; background: linear-gradient(to right, #1e3a8a, #3b82f6, #93c5fd); -webkit-background-clip: text; background-clip: text; color: transparent;">SITERAH</h1>
-            <h2 class="text-xl font-bold text-gray-800 mb-6 text-center md:text-left">Silahkan Masuk Ke Akun Anda</h2>
+            <h3 class="text-lg font-bold text-gray-800 mb-3 text-center md:text-left">Silahkan Masuk Ke Akun Anda</h3>
 
             <form wire:submit="login" class="space-y-6">
                 <!-- Email Address -->

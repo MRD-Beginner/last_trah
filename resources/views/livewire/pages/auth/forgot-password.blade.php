@@ -36,33 +36,36 @@ new #[Layout('layouts.guest')] class extends Component
     }
 }; ?>
 
-<div>
-    <!-- Logo -->
-            <div class="auth-logo mb-4 text-center">
-                <a href="{{ url('/') }}" class="d-flex flex-column align-items-center text-decoration-none">
-                    <span class="logo-icon mb-2">@include('_partials.macros', ["width" => 40, "withbg" => 'var(--bs-primary)'])</span>
-                    <span class="logo-text fs-3 fw-bold text-dark">{{ config('variables.templateName') }}</span>
-                </a>
+<div class="min-vh-100 min-vw-100 d-flex justify-content-center align-items-center p-3">
+    <div class="card p-5" style="width: 100%; max-width: 500px;">
+        <!-- Logo -->
+        <div class="auth-logo mb-4 text-center">
+            <a href="{{ url('/') }}" class="d-flex flex-column align-items-center text-decoration-none">
+                <span class="logo-icon mb-2">@include('_partials.macros', ["width" => 40, "withbg" => 'var(--bs-primary)'])</span>
+                <span class="logo-text fs-3 fw-bold text-dark">{{ config('variables.templateName') }}</span>
+            </a>
+        </div>
+        
+        <div class="mb-4 text-sm text-gray-600 text-center">
+            {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
+        </div>
+
+        <!-- Session Status -->
+        <x-auth-session-status class="mb-4 text-center" :status="session('status')" />
+
+        <form wire:submit="sendPasswordResetLink">
+            <!-- Email Address -->
+            <div class="mb-3">
+                <x-input-label for="email" :value="__('Email')" />
+                <x-text-input wire:model="email" id="email" class="form-control" type="email" name="email" required autofocus />
+                <x-input-error :messages="$errors->get('email')" class="mt-2" />
             </div>
-    <div class="mb-4 text-sm text-gray-600">
-        {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
+
+            <div class="d-grid">
+                <x-primary-button class="btn btn-primary">
+                    {{ __('Email Password Reset Link') }}
+                </x-primary-button>
+            </div>
+        </form>
     </div>
-
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
-
-    <form wire:submit="sendPasswordResetLink">
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input wire:model="email" id="email" class="block mt-1 w-full" type="email" name="email" required autofocus />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button>
-                {{ __('Email Password Reset Link') }}
-            </x-primary-button>
-        </div>
-    </form>
 </div>

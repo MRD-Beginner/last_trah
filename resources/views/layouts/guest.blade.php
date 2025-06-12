@@ -30,8 +30,8 @@
     @include('layouts/sections/styles')
 </head>
 
-<body class="bg-[#f2faef]" style="max-height: 100dvh !important">
-    <div class="flex">
+<body class="bg-[#f2faef]">
+    <div class="flex" style="min-height: 90vh !important; max-height: 100vh !important">
         {{ $slot }}
     </div>
 </body>
