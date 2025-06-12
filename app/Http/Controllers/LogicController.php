@@ -185,7 +185,7 @@ class LogicController extends Controller
         $depth = $this->calculateActualDepth($path);
         $first = $path[0];
         $last = end($path);
-        $gender = $first->jenis_kelamin; // Menggunakan jenis_kelamin dari model
+        $jenis_kelamin = $first->jenis_kelamin; // Menggunakan jenis_kelamin dari model
         
         $relations = [
             -1 => ['Laki-Laki' => 'adalah anak laki laki ', 'Perempuan' => 'adalah anak perempuan '],
@@ -225,8 +225,8 @@ class LogicController extends Controller
             -18 => ['Laki-Laki' => 'mbah trah tumerah lanang dari', 'Perempuan' => 'mbah trah tumerah wedok dari'],
             18 => ['Laki-Laki' => 'trah tumerah lanang dari', 'Perempuan' => 'trah tumerah wedok dari'],
             'nak-sanak' => [ 'Laki-Laki' => 'sedulur nak-sanak lanang (sepupu) dengan', 'Perempuan' => 'sedulur nak-sanak wedok (sepupu) dengan'],
-            'misanan' => ['Laki-Laki' => 'sedulur misanan lanang (sepupu) dengan',  'Perempuan' => 'sedulur misanan wedok (sepupu) dengan'],
-            'mindhoan' => ['Laki-Laki' => 'sedulur mindhoan lanang (sepupu) dengan', 'Perempuan' => 'sedulur mindhoan wedok (sepupu) dengan'],
+            'misanan' => ['Laki-Laki' => 'sedulur misanan lanang  dengan',  'Perempuan' => 'sedulur misanan wedok dengan'],
+            'mindhoan' => ['Laki-Laki' => 'sedulur mindhoan lanang  dengan', 'Perempuan' => 'sedulur mindhoan wedok dengan'],
             'old uncle' => ['Laki-Laki' => 'pakde dari',  'Perempuan' => 'bukde dari'],
             'young uncle' => ['Laki-Laki' => 'paklek dari', 'Perempuan' => 'buklek dari'],
             'ponakan prunan' => ['Laki-Laki' => 'ponakan prunan lanang dari', 'Perempuan' => 'ponakan prunan wedok dari'],
@@ -237,21 +237,21 @@ class LogicController extends Controller
         //LOGIC NYA   
         // 1. Orang tua langsung
         if ($last->parent_id === $first->id) {
-            return "{$first->nama} " .$relations[1][$gender]. " {$last->nama}";
+            return "{$first->nama} " .$relations[1][$jenis_kelamin]. " {$last->nama}";
         }
 
         // 2. Anak langsung
         if ($first->parent_id === $last->id) {
             $urutan = $first->urutan;
-            return "{$first->nama} " . $relations[-1][$gender] . " ke-{$urutan} {$last->nama}";
+            return "{$first->nama} " . $relations[-1][$jenis_kelamin] . " ke-{$urutan} {$last->nama}";
         }
 
         // 3. Saudara kandung
         if ($depth === 0 && $first->parent_id === $last->parent_id) {
             if ($first->urutan < $last->urutan) {
-                return " {$first->nama} ". ($gender === 'Laki-Laki' ? 'mas dari' : 'mbak dari')." {$last->nama}" ;
+                return " {$first->nama} ". ($jenis_kelamin === 'Laki-Laki' ? 'mas dari' : 'mbak dari')." {$last->nama}" ;
             }
-            return "{$first->nama} " .($gender === 'Laki-Laki' ? 'adik laki-laki dari' : 'adik perempuan dari')." {$last->nama}";
+            return "{$first->nama} " .($jenis_kelamin === 'Laki-Laki' ? 'adik laki-laki dari' : 'adik perempuan dari')." {$last->nama}";
         }
 
         // 4. Sepupu  (nak-sanak)
@@ -259,11 +259,8 @@ class LogicController extends Controller
             && optional($last->parent)->parent_id
             && $first->parent->parent_id === $last->parent->parent_id) {
             $grandf = $first->parent->parent; //mencari kakek/nenek
-            // $grandfgender = $relations[-2][$grandf->jenis_kelamin];
-            // $genderKey = $grandf->jenis_kelamin ?? null;
-            // $grandfgender = isset($relations[-2][$genderKey]) ? $relations[-2][$genderKey] : 'kakek/neneknya';
             $grandfgender = (strtolower($grandf->jenis_kelamin ?? '') === 'laki-laki') ? 'kakek' : 'nenek';
-            return "{$first->nama} " .$relations['nak-sanak'][$gender] . " {$last->nama} dari {$grandfgender}  {$grandf->nama}";
+            return "{$first->nama} " .$relations['nak-sanak'][$jenis_kelamin] . " {$last->nama} dari {$grandfgender}  {$grandf->nama}";
         }
        
 
@@ -273,9 +270,9 @@ class LogicController extends Controller
             && $first->parent->parent->parent_id === $last->parent->parent->parent_id) {
             $buyut = $first->parent->parent->parent;
             // $buyutgender = $relations[-3][$buyut->jenis_kelamin];
-            $genderKey = $buyut->jenis_kelamin ?? null;
-            $buyutgender = isset($relations[-3][$genderKey]) ? $relations[-3][$genderKey] : 'mbah buyut';
-            return "{$first->nama} " .$relations['misanan'][$gender]. " {$last->nama} dari {$buyutgender} {$buyut->nama}";
+            $jenis_kelaminKey = $buyut->jenis_kelamin ?? null;
+            $buyutgender = isset($relations[-3][$jenis_kelaminKey]) ? $relations[-3][$jenis_kelaminKey] : 'mbah buyut';
+            return "{$first->nama} " .$relations['misanan'][$jenis_kelamin]. " {$last->nama} dari {$buyutgender} {$buyut->nama}";
         }
         // 6. Mindhoan
         if ($depth === 0 && optional($first->parent->parent->parent)->parent_id
@@ -283,67 +280,64 @@ class LogicController extends Controller
             && $first->parent->parent->parent->parent_id === $last->parent->parent->parent->parent_id) {
             $canggah = $first->parent->parent->parent->parent;
             // $canggahgender = $relations[-4][$canggah->jenis_kelamin];
-            $genderKey = $canggah->jenis_kelamin ?? null;
-            $canggahgender = isset($relations[-4][$genderKey]) ? $relations[-4][$genderKey] : 'mbah canggah';
-            return "{$first->nama} " .$relations['mindhoan'][$gender]. " {$last->nama} dari {$canggahgender} {$canggah->nama}";
+            $jenis_kelaminKey = $canggah->jenis_kelamin ?? null;
+            $canggahgender = isset($relations[-4][$jenis_kelaminKey]) ? $relations[-4][$jenis_kelaminKey] : 'mbah canggah';
+            return "{$first->nama} " .$relations['mindhoan'][$jenis_kelamin]. " {$last->nama} dari {$canggahgender} {$canggah->nama}";
         }
 
         // 7. Pakde/paklek
         if ($depth === -1 && optional($last->parent)->parent_id
             && $first->parent_id === $last->parent->parent_id) {
             $key = $first->urutan < $last->parent->urutan ? 'old uncle' : 'young uncle';
-            return "{$first->nama} " .$relations[$key][$gender]." {$last->nama}";
+            return "{$first->nama} " .$relations[$key][$jenis_kelamin]." {$last->nama}";
         }
 
         // 8. Keponakan 
         if ($depth === 1 && isset($first->parent)
             && $last->parent_id === $first->parent->parent_id) {
             $key = $last->urutan < $first->parent->urutan ? 'ponakan prunan' : 'ponakan';
-            return "{$first->nama} " .$relations[$key][$gender]." {$last->nama}";
+            return "{$first->nama} " .$relations[$key][$jenis_kelamin]." {$last->nama}";
         }
 
         // 9. Cucu 
         if ($depth === 2 && optional($first->parent)->parent_id === $last->id) {
-            return "{$first->nama} " .$relations[2][$gender]. " {$last->nama}";
+            return "{$first->nama} " .$relations[2][$jenis_kelamin]. " {$last->nama}";
         }
 
         // 10. Kakek/Nenek 
         if ($depth === -2 && optional($last->parent)->parent_id === $first->id) {
-            return "{$first->nama} " .$relations[-2][$gender]. " {$last->nama}";
+            return "{$first->nama} " .$relations[-2][$jenis_kelamin]. " {$last->nama}";
         }
 
-        //  A. Aunt/Uncle once‐removed (dan lebih)
+        
+
+        //  11. Aunt/Uncle once‐removed (dan lebih)
         if ($depth < 0) {
             // removed = 0 → direct uncle, 1 → once-removed, 2 → twice-removed
             $removed     = abs($depth) - 1;
             $pFirst      = $this->getAncestor($first, 1);            // ayah/ibu first
             $commonAnc   = $this->getAncestor($last, $removed + 2);  // ancestor di level yang sama
 
-            if ($pFirst && $commonAnc
-                && $pFirst->parent_id === $commonAnc->parent_id
-            ) {
+            if ($pFirst && $commonAnc && $pFirst->parent_id === $commonAnc->parent_id) {
                 $u1  = $pFirst->urutan;
-                $u2  = optional($last->parent)->urutan;
+                $u2  = $commonAnc->urutan;
                 $key = $u1 < $u2 ? 'old uncle' : 'young uncle';
-                return "{$first->nama} " .$relations[$key][$gender]." {$last->nama}";
+                return "{$first->nama} " .$relations[$key][$first->jenis_kelamin]." {$last->nama}";
             }
         }
 
-
-        //  Niece/Nephew once‐removed (dan lebih)
+        //  12. Niece/Nephew once‐removed (dan lebih)
         if ($depth > 0) {
             // removed = 0 → direct niece, 1 → once-removed, 2 → twice-removed
             $removed     = $depth - 1;
             $pLast       = $this->getAncestor($last, 1);              // ayah/ibu last
             $commonAnc   = $this->getAncestor($first, $removed + 2);  // ancestor level yang sama
 
-            if ($pLast && $commonAnc
-                && $pLast->parent_id === $commonAnc->parent_id
-            ) {
-                $u1  = $first->urutan;
+            if ($pLast && $commonAnc && $pLast->parent_id === $commonAnc->parent_id) {
+                $u1  = $commonAnc->urutan;
                 $u2  = $pLast->urutan;
                 $key = $u1 < $u2 ? 'ponakan prunan' : 'ponakan';
-                return "{$first->nama} " .$relations[$key][$gender]." {$last->nama}";
+                return "{$first->nama} " .$relations[$key][$first->jenis_kelamin]." {$last->nama}";
             }
         }
 
