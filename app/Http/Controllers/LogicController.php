@@ -299,15 +299,42 @@ class LogicController extends Controller
             return "{$first->nama} " .$relations[$key][$jenis_kelamin]." {$last->nama}";
         }
 
-        // 9. Cucu 
-        if ($depth === 2 && optional($first->parent)->parent_id === $last->id) {
-            return "{$first->nama} " .$relations[2][$jenis_kelamin]. " {$last->nama}";
+        if (abs($depth) >= 2) {
+            // PERTAMA, cek apakah ini hubungan garis lurus.
+            $isDirectLine = false;
+            if ($depth < 0) { // $first adalah leluhur dari $last
+                $ancestor = $this->getAncestor($last, abs($depth));
+                if ($ancestor && $ancestor->id === $first->id) {
+                    $isDirectLine = true;
+                }
+            } else { // $first adalah keturunan dari $last ($depth > 0)
+                $ancestor = $this->getAncestor($first, $depth);
+                if ($ancestor && $ancestor->id === $last->id) {
+                    $isDirectLine = true;
+                }
+            }
+            
+            // KEDUA, jika benar garis lurus DAN ada definisinya di $relations
+            if ($isDirectLine && isset($relations[$depth])) {
+                // Kita tentukan gender yang tepat untuk digunakan
+                $genderKey = ($depth < 0) ? $first->jenis_kelamin : $jenis_kelamin;
+                
+                // Ambil teks relasi yang pasti
+                $relationText = $relations[$depth][$genderKey];
+                
+                return "{$first->nama} " . trim($relationText) . " {$last->nama}";
+            }
         }
 
+        // 9. Cucu 
+        // if ($depth === 2 && optional($first->parent)->parent_id === $last->id) {
+        //     return "{$first->nama} " .$relations[2][$jenis_kelamin]. " {$last->nama}";
+        // }
+
         // 10. Kakek/Nenek 
-        if ($depth === -2 && optional($last->parent)->parent_id === $first->id) {
-            return "{$first->nama} " .$relations[-2][$jenis_kelamin]. " {$last->nama}";
-        }
+        // if ($depth === -2 && optional($last->parent)->parent_id === $first->id) {
+        //     return "{$first->nama} " .$relations[-2][$jenis_kelamin]. " {$last->nama}";
+        // }
 
         
 
