@@ -303,12 +303,12 @@ class LogicController extends Controller
         }
 
         // 9. Cucu 
-        if ($depth === 2 && $last->parent   && $last->parent->parent ) {
+        if ($depth === 2 && optional($first->parent)->parent_id === $last->id) {
             return "{$first->nama} " .$relations[2][$gender]. " {$last->nama}";
         }
 
         // 10. Kakek/Nenek 
-        if ($depth === -2 && $last->parent && $last->parent->parent) {
+        if ($depth === -2 && optional($last->parent)->parent_id === $first->id) {
             return "{$first->nama} " .$relations[-2][$gender]. " {$last->nama}";
         }
 
