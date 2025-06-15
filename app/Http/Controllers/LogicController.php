@@ -402,6 +402,26 @@ class LogicController extends Controller
                 $detailedPath[] = " {$current->nama} {$relation}ke-{$current->urutan} dari {$next->nama}";
                 continue;
             }
+            //3. hubungan horizontal
+            elseif ($current->parent_id !== null && $current->parent_id === $next->parent_id) {
+                $relationText = null;
+
+                // Cek apakah 'current' lebih tua
+                if ($current->urutan < $next->urutan) {
+                    $relationText = ($current->jenis_kelamin == 'Laki-Laki') ? "adalah kangmas dari" : "adalah mbakyu dari";
+                }
+                // Cek apakah 'current' lebih muda
+                elseif ($current->urutan > $next->urutan) {
+                    $relationText = ($current->jenis_kelamin == 'Laki-Laki') ? "adalah adhik lanang dari" : "adalah adhik wedok dari";
+                }
+
+                // Jika ada hubungan saudara (lebih tua/muda), tambahkan ke jalur
+                if ($relationText) {
+                    $detailedPath[] = "{$current->nama} {$relationText} {$next->nama}";
+                    continue;
+                }
+         
+            }
          
         }
 
