@@ -168,9 +168,9 @@ class LogicController extends Controller
             $next = $path[$i];
             
             if ($next->parent_id == $current->id) {
-                $depth--;
-            } elseif ($current->parent_id == $next->id) {
                 $depth++;
+            } elseif ($current->parent_id == $next->id) {
+                $depth--;
             }
             
             $current = $next;
@@ -234,6 +234,7 @@ class LogicController extends Controller
         ];
 
 
+        
         //Logic Vertikal   
         if (abs($depth) >= 1) {
             $isDirectLine = false;
@@ -298,48 +299,45 @@ class LogicController extends Controller
             return "{$first->nama} " .$relations['mindhoan'][$jenis_kelamin]. " {$last->nama} dari {$canggahgender} {$canggah->nama}";
         }
 
-        // 7. Pakde/paklek
+        // 7. Pakde/paklek keponakan
         if ($depth === -1 && optional($last->parent)->parent_id
             && $first->parent_id === $last->parent->parent_id) {
             $key = $first->urutan < $last->parent->urutan ? 'old uncle' : 'young uncle';
             return "{$first->nama} " .$relations[$key][$jenis_kelamin]." {$last->nama}";
-        }
-
-        // 8. Keponakan 
-        if ($depth === 1 && isset($first->parent)
+        }elseif ($depth === 1 && isset($first->parent)
             && $last->parent_id === $first->parent->parent_id) {
             $key = $last->urutan < $first->parent->urutan ? 'ponakan prunan' : 'ponakan';
             return "{$first->nama} " .$relations[$key][$jenis_kelamin]." {$last->nama}";
         }
         
 
-        //  11. Uncle once‐removed (dan lebih)
-        if ($depth < 0) {
-            $removed     = abs($depth) - 1;
-            $pFirst      = $this->getAncestor($first, 1);            
-            $commonAnc   = $this->getAncestor($last, $removed + 2);  
+        // //  11. Uncle once‐removed (dan lebih)
+        // if ($depth < 0) {
+        //     $removed     = abs($depth) - 1;
+        //     $pFirst      = $this->getAncestor($first, 1);            
+        //     $commonAnc   = $this->getAncestor($last, $removed + 2);  
 
-            if ($pFirst && $commonAnc && $pFirst->parent_id === $commonAnc->parent_id) {
-                $u1  = $pFirst->urutan;
-                $u2  = $commonAnc->urutan;
-                $key = $u1 < $u2 ? 'old uncle' : 'young uncle';
-                return "{$first->nama} " .$relations[$key][$first->jenis_kelamin]." {$last->nama}";
-            }
-        }
+        //     if ($pFirst && $commonAnc && $pFirst->parent_id === $commonAnc->parent_id) {
+        //         $u1  = $pFirst->urutan;
+        //         $u2  = $commonAnc->urutan;
+        //         $key = $u1 < $u2 ? 'old uncle' : 'young uncle';
+        //         return "{$first->nama} " .$relations[$key][$first->jenis_kelamin]." {$last->nama}";
+        //     }
+        // }
 
-        //  12. Nephew once‐removed (dan lebih)
-        if ($depth > 0) {
-            $removed     = $depth - 1;
-            $pLast       = $this->getAncestor($last, 1);              
-            $commonAnc   = $this->getAncestor($first, $removed + 2);  
+        // //  12. Nephew once‐removed (dan lebih)
+        // if ($depth > 0) {
+        //     $removed     = $depth - 1;
+        //     $pLast       = $this->getAncestor($last, 1);              
+        //     $commonAnc   = $this->getAncestor($first, $removed + 2);  
 
-            if ($pLast && $commonAnc && $pLast->parent_id === $commonAnc->parent_id) {
-                $u1  = $commonAnc->urutan;
-                $u2  = $pLast->urutan;
-                $key = $u1 < $u2 ? 'ponakan prunan' : 'ponakan';
-                return "{$first->nama} " .$relations[$key][$first->jenis_kelamin]." {$last->nama}";
-            }
-        }
+        //     if ($pLast && $commonAnc && $pLast->parent_id === $commonAnc->parent_id) {
+        //         $u1  = $commonAnc->urutan;
+        //         $u2  = $pLast->urutan;
+        //         $key = $u1 < $u2 ? 'ponakan prunan' : 'ponakan';
+        //         return "{$first->nama} " .$relations[$key][$first->jenis_kelamin]." {$last->nama}";
+        //     }
+        // }
 
 
 
