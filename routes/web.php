@@ -58,13 +58,15 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
 
     Route::get('keluarga/detail/private/{id}', [KeluargaController::class, 'detail_private'])->name('keluarga.detail.private');
 
-    Route::post('keluarga/verify-pass/{id}', [KeluargaController::class, 'checkPassword'])
-        ->name('keluarga.check.pass');
 });
+Route::post('/keluarga/{id}/verify-password', [KeluargaController::class, 'verifyPassword'])
+ ->name('keluarga.verify.password');
 
-Route::get('detail/public/data/keluarga', function () {
-        return view('detail.detaill');
-    });
+// Route::get('detail/public/data/keluarga', function () {
+//         return view('detail.detaill');
+//     });
+
+Route::get('detail/public/data/keluarga/{id}', [KeluargaController::class, 'showPublic'])->name('keluarga.public');
 
 Route::get('keluarga/detail/public/{id}', [KeluargaController::class, 'detail_public'])->name('keluarga.detail.public');
 

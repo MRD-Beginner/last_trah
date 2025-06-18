@@ -8,9 +8,6 @@ use Illuminate\Http\Request;
 
 class SilsilahController extends Controller
 {
-    public function index() {
-        
-    }
     public function create_anggota_keluarga(Request $request) 
     {
         $validated = $request->validate([
@@ -19,7 +16,7 @@ class SilsilahController extends Controller
             'tanggal_lahir' => 'nullable|date',
             'status_kehidupan' => 'required|in:Hidup,Wafat',
             'tanggal_kematian' => 'nullable|date|required_if:status_kehidupan,Wafat',
-            'alamat' => 'required|string|max:255',
+            'alamat' => 'nullable|string|max:255',
             'urutan' => 'required|string',
             'tree_id' => 'required|string',
             'keluarga_image_link' => 'nullable|string',
@@ -55,7 +52,7 @@ class SilsilahController extends Controller
             'tanggal_lahir_edit' => 'nullable|date',
             'status_kehidupan_edit' => 'required',
             'tanggal_kematian_edit' => 'nullable|date', // Perbaikan disini
-            'alamat_edit' => 'required|string|max:255',
+            'alamat_edit' => 'nullable|string|max:255',
             'urutan_edit' => 'required|string',
             'tree_id' => 'required|exists:trah,id',
             'keluarga_image_edit' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Perbaikan disini

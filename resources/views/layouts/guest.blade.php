@@ -18,6 +18,7 @@
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {{-- <link rel="stylesheet" href="{{asset('resources/css/app.css')}}"> --}}
 
     <!-- Font Awesome -->
     <script src="https://kit.fontawesome.com/fe9f5ba15b.js" crossorigin="anonymous"></script>
@@ -34,6 +35,7 @@
     <div class="flex" style="min-height: 90vh !important; max-height: 100vh !important">
         {{ $slot }}
     </div>
+    <script src="js/app.js"></script>
 </body>
 
 </html>

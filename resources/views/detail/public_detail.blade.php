@@ -166,7 +166,7 @@
         }
 
         .container {
-            /* max-width: 100%; */
+            max-width: 100%;
             flex-wrap: wrap;
             padding: 16px;
         }
@@ -383,7 +383,7 @@
                             <div class="row g-4">
                                 <div class="col mb-4">
                                     <label for="alamat" class="form-label">Alamat</label>
-                                    <textarea class="form-control" name="alamat" required></textarea>
+                                    <textarea class="form-control" name="alamat"></textarea>
                                 </div>
                             </div>
                             <div class="row g-4">
@@ -516,7 +516,7 @@
                                 <div class="row g-4">
                                     <div class="col mb-4">
                                         <label for="alamat_edit" class="form-label">Alamat</label>
-                                        <textarea class="form-control" name="alamat_edit" required>{{ $anggota->alamat }}</textarea>
+                                        <textarea class="form-control" name="alamat_edit">{{ $anggota->alamat }}</textarea>
                                     </div>
                                 </div>
                                 <div class="row g-4">
@@ -736,11 +736,11 @@
                                             </select>
                                         </div>
                                         <div class="col mb-0">
-                                            <label for="urutan_edit" class="form-label">Urutan</label>
+                                            <label for="urutan_edit" class="form-label">Urutan Ke</label>
                                             <select id="urutan_edit" name="urutan_edit" class="form-select" required>
                                                 @for ($i = 1; $i <= 14; $i++)
                                                     <option value="{{ $i }}"
-                                                        {{ $partner->urutan == $i ? 'selected' : '' }}>{{ $i }}
+                                                        {{ $partner->urutan_anak == $i ? 'selected' : '' }}>{{ $i }}
                                                     </option>
                                                 @endfor
                                             </select>
@@ -766,12 +766,12 @@
                                                 value="{{ $partner->tanggal_kematian ? \Carbon\Carbon::parse($partner->tanggal_kematian)->format('Y-m-d') : '' }}">
                                         </div>
                                     </div>
-                                    {{-- <div class="row g-4">
-                                <div class="col mb-4">
-                                    <label for="alamat_edit" class="form-label">Alamat</label>
-                                    <textarea class="form-control" id="alamat_edit" name="alamat_edit" required>{{ $partner->alamat }}</textarea>
-                                </div>
-                            </div> --}}
+                                    <div class="row g-4">
+                                        <div class="col mb-4">
+                                            <label for="alamat_edit" class="form-label">Alamat</label>
+                                            <textarea class="form-control" id="alamat_edit" name="alamat_edit" required>{{ $partner->alamat }}</textarea>
+                                        </div>
+                                    </div>
                                     <div class="row g-4">
                                         <div class="col mb-4">
                                             <div class="mb-3">
@@ -983,7 +983,8 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        @foreach ($anggota_keluarga as $anggota)
+                                                        {{-- ubah nanti sort by date created --}}
+                                                        @foreach ($anggota_keluarga as $anggota ) 
                                                             <tr class="odd">
                                                                 <td class="text-center col-no" style="overflow: hidden;">
                                                                     {{ $loop->iteration }}
@@ -1225,7 +1226,7 @@
                     <div class="row justify-center">
                         <h1 class="fw-bold" style="color: #000 !important; text-transform: capitalize;">
                             {{ $trah->tree_name }}</h1>
-                        <div class="tree">
+                        <div class="tree justify-content-center">
                             <ul>
                                 @foreach ($rootMember as $member)
                                     @include('partials.family-member', ['member' => $member])
@@ -1239,7 +1240,7 @@
             <div class="tab-pane fade {{ request()->has('compare') ? 'show active' : '' }}"
                 id="navs-pills-justified-messages" role="tabpanel">
                 {{-- ini page 3 --}}
-                <div class="card mb-4">
+                <div class="mb-4">
                     <div class="card-body">
                         <h5 class="card-title text-center w-100">Perbandingan Hubungan Keluarga</h5>
 
@@ -1255,8 +1256,7 @@
                                             <label for="person1" class="form-label text-center w-100">Pilih Anggota
                                                 Keluarga 1:</label>
                                             <div class="d-flex justify-content-center">
-                                                <select name="name1" id="person1" class="form-control"
-                                                    style="width: 450px;" required>
+                                                <select name="name1" id="person1" class="form-control" required>
                                                     <option value="" style="color: gray;">-- Pilih --</option>
                                                     @foreach ($anggota_keluarga as $trah)
                                                         <option value="{{ $trah->nama }}" style="color: black;"
@@ -1269,18 +1269,11 @@
                                         </div>
                                     </div>
 
-                                    <div class="col d-flex justify-content-center align-items-center">
-                                        <button type="submit" class="btn btn-primary rounded-circle"
-                                            style="width: 50px; height: 50px; font-size: 24px;">VS</button>
-                                    </div>
-
-
                                     <div class="col">
                                         <div class="mb-3">
                                             <label for="person2" class="form-label text-center w-100">Pilih Anggota
                                                 Keluarga 2:</label>
-                                            <select name="name2" id="person2" class="form-control"
-                                                style="width: 450px;" required>
+                                            <select name="name2" id="person2" class="form-control" required>
                                                 <option value="" style="color: gray;">-- Pilih --</option>
                                                 @foreach ($anggota_keluarga as $trah)
                                                     <option value="{{ $trah->nama }}"
@@ -1294,7 +1287,11 @@
                                 </div>
                             </div>
 
-
+                            <div class="row gx-5">
+                                <button type="submit" class="btn btn-danger mx-6">Bandingkan Hubungan</button>
+                                <div class="col d-flex justify-content-center align-items-center">
+                                </div>
+                            </div>
                         </form>
 
 
@@ -1369,9 +1366,9 @@
                             </div>
                         @endif
 
-                        <div class="d-grid gap-2 mt-4">
+                        {{-- <div class="d-grid gap-2 mt-4">
                             <button type="button" class="btn btn-danger" onclick="resetForm();">Reset</button>
-                        </div>
+                        </div> --}}
 
                         @if (isset($relationshipDetails) && isset($relationshipDetailsReversed))
                             <script>

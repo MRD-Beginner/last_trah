@@ -42,9 +42,9 @@ class Trah extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function setPasswordAttribute($value)
-    {
-        $this->attributes['password'] = bcrypt($value);
-    }
+    // public function setPasswordAttribute($value)
+    // {
+    //     $this->attributes['password'] = bcrypt($value);
+    // }
 
 }

@@ -5,7 +5,7 @@ $containerFooter = !empty($containerNav) ? $containerNav : 'container-fluid';
 <!-- Footer-->
 <footer class="content-footer footer bg-footer-theme">
   <div class="{{ $containerFooter }}">
-    <div class="footer-container d-flex align-items-center justify-content-between py-4 flex-md-row flex-column">
+    <div class="footer-container d-flex align-items-center justify-content- text-center py-4 flex-md-row flex-column">
       <div class="text-body">
         Made with hardwork by <a href="https://github.com/MRD-Beginner">Muhammad Rizki Dalfi</a> & <a href="">Dwi Nur Indah Sari</a> © <script>document.write(new Date().getFullYear())</script>, 
       </div>

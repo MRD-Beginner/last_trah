@@ -1,3 +1,8 @@
+@php
+    $isMenu = false;
+    $navbarHideToggle = false;
+@endphp
+
 @extends('layouts/contentNavbarLayout')
 
 @section('title', 'Detail Keluarga')
@@ -5,6 +10,7 @@
 @section('page-script')
 
 @section('content')
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
@@ -20,10 +26,17 @@
             overflow: visible;
         }
 
+        th {
+            background-color: #8c8efd !important;
+            border-color: #8c8efd !important;
+            color: white !important;
+            text-align: center !important;
+            text-transform: capitalize !important;
+        }
+
         .tree {
             height: auto;
             text-align: center;
-            overflow-x: auto;
             white-space: nowrap;
             /* Mencegah konten untuk turun ke baris berikutnya */
             width: 100%;
@@ -99,8 +112,7 @@
         }
 
         .tree li a {
-            background: whitesmoke;
-            border: 1px solid #00963c;
+            border: 1px solid rgb(130, 130, 130);
             padding: 10px;
             display: inline-grid;
             border-radius: 5px;
@@ -115,6 +127,8 @@
             margin-bottom: 10px !important;
             border-radius: 100px;
             margin: auto;
+            object-fit: cover;
+            aspect-ratio: 1/1;
         }
 
         .tree li a span {
@@ -153,12 +167,146 @@
 
         .container {
             max-width: 100%;
-            overflow: hidden;
+            flex-wrap: wrap;
             padding: 16px;
+        }
+
+        .couple-container {
+            justify-content: center;
+            align-items: flex-start;
+            display: flex;
+            flex-direction: row;
+            width: auto;
+            /* background: #000; */
+        }
+
+        .partner,
+        .main-member {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .main-member span {
+            max-width: 100px;
+        }
+
+        .partner a {
+            border: 1px solid #000;
+            padding: 5px;
+            border-radius: 5px;
+            text-decoration: none;
+            max-height: 100px !important;
+
+        }
+
+        .partner a img {
+            width: 15px;
+            height: 15px;
+        }
+
+        .partner a span {
+            font-size: 8px !important;
+            padding: 3px;
+            margin-top: 5px;
+            background-color: whitesmoke !important;
+        }
+
+        .truncate-name {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 4px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .high-z-index {
+            z-index: 99999 !important;
+        }
+
+        @media (max-width: 576px) {
+            .table-responsive {
+                overflow-y: scroll !important;
+            }
+        }
+
+        #navs-pills-justified-profile {
+            overflow-x: auto !important;
+            overflow-y: auto !important;
+            touch-action: pan-x pan-y !important;
+            cursor: grab !important;
+            max-height: 500px !important;
+        }
+
+        .rip-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+            /* background-color: rgba(0, 0, 0, 0.3); */
+            border-radius: 50%;
+            /* Match the image border-radius */
         }
     </style>
 
-    <div class="modal-pop-up">
+
+    <!-- Modal -->
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            ...
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Understood</button>
+        </div>
+        </div>
+    </div>
+    </div>
+
+    @if (session('success'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'Sukses!',
+                    text: '{{ session('success') }}',
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                    customClass: {
+                        container: 'high-z-index' // Kelas custom untuk container
+                    }
+                });
+            });
+        </script>
+    @endif
+
+    <div class="modal-group">
         <div class="modal fade" id="familyModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
@@ -169,17 +317,15 @@
                     <form action="{{ route('anggota.keluarga.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="modal-body">
-                            @if ($trahs->id)
-                                <input type="hidden" name="tree_id" value="{{ $trahs->id }}">
+                            @if ($trah->id)
+                                <input type="hidden" name="tree_id" value="{{ $trah->id }}">
                             @endif
-                            <div class="row">
+                            <div class="row g-4">
                                 <div class="col mb-4">
                                     <label for="nama_anggota_keluarga" class="form-label">Nama</label>
                                     <input type="text" id="nama_anggota_keluarga" name="nama_anggota_keluarga"
                                         class="form-control" placeholder="Nama Lengkap" required>
                                 </div>
-                            </div>
-                            <div class="row g-4">
                                 <div class="col mb-4">
                                     <label for="jenis_kelamin" class="form-label">Jenis Kelamin</label>
                                     <select id="jenis_kelamin" name="jenis_kelamin" class="form-select" required>
@@ -187,30 +333,13 @@
                                         <option value="Perempuan">Perempuan</option>
                                     </select>
                                 </div>
-                                <div class="col mb-0">
-                                    <label for="tanggal_lahir" class="form-label">Tanggal Lahir</label>
-                                    <input type="date" id="tanggal_lahir" name="tanggal_lahir" class="form-control">
-                                </div>
                             </div>
                             <div class="row g-4">
                                 <div class="col mb-4">
-                                    <label for="parent_id" class="form-label">Orang Tua</label>
-                                    <select id="parent_id" name="parent_id" class="form-select">
-                                        <option value="">Pilih Orang Tua</option> <!-- Default empty option -->
-                                        @foreach ($existingMembers as $member)
-                                            <option value="{{ $member->id }}"
-                                                {{ old('parent_id') == $member->id ? 'selected' : '' }}>
-                                                {{ $member->nama }}
-                                                @if ($member->jenis_kelamin === 'Laki-Laki')
-                                                    (Pak)
-                                                @else
-                                                    (Ibu)
-                                                @endif
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                    <label for="tanggal_lahir" class="form-label">Tanggal Lahir</label>
+                                    <input type="date" id="tanggal_lahir" name="tanggal_lahir" class="form-control">
                                 </div>
-                                <div class="col mb-0">
+                                <div class="col mb-4">
                                     <label for="urutan" class="form-label">Urutan</label>
                                     <select id="urutan" name="urutan" class="form-select" required>
                                         <option value="1">1</option>
@@ -227,6 +356,33 @@
                                         <option value="12">12</option>
                                         <option value="13">13</option>
                                         <option value="14">14</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row g-4">
+                                <div class="col mb-4">
+                                    <label for="parent1_id" class="form-label">Orang Tua 1</label>
+                                    <select id="parent1_id" name="parent1_id" class="form-select" onchange="loadPartners()">
+                                        <option value="">Pilih Orang Tua</option>
+                                        @foreach ($anggota_keluarga as $member)
+                                            <option value="{{ $member->id }}"
+                                                {{ old('parent1_id') == $member->id ? 'selected' : '' }}>
+                                                {{ $member->nama }}
+                                                @if ($member->jenis_kelamin === 'Laki-Laki')
+                                                    (Pak)
+                                                @else
+                                                    (Ibu)
+                                                @endif
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="col mb-4">
+                                    <label for="parent2_id" class="form-label">Orang Tua 2 (Pasangan)</label>
+                                    <select id="parent2_id" name="parent2_id" class="form-select" disabled>
+                                        <option value="">Pilih Pasangan</option>
+                                        <!-- Partners will be loaded via JavaScript -->
                                     </select>
                                 </div>
                             </div>
@@ -253,11 +409,13 @@
                             <div class="row g-4">
                                 <div class="col mb-4">
                                     <div class="mb-3">
-                                        <label for="keluarga_image" class="form-label">Upload Avatar</label>
+                                        <label for="keluarga_image_link" class="form-label">Link (Media Sosial, Foto,
+                                            Drive)</label>
                                         <img src="" class="img-thumbnail image-preview mb-3"
                                             style="display: none; max-width: 100px; max-height: 100px; object-fit: cover; aspect-ratio: 1/1; border-radius: 10px;">
-                                        <input class="form-control file-uploader" type="file" id="keluarga_image"
-                                            name="keluarga_image" accept="image/*" onchange="upload()">
+                                        <input class="form-control" type="url" id="keluarga_image_link"
+                                            name="keluarga_image_link" placeholder="https://example.com/image.jpg"
+                                            onchange="previewImageFromLink()">
                                     </div>
                                 </div>
                             </div>
@@ -286,15 +444,13 @@
                             @method('PUT')
                             <div class="modal-body">
                                 <input type="hidden" name="tree_id" value="{{ $anggota->tree_id }}">
-                                <div class="row">
+                                <div class="row g-4">
                                     <div class="col mb-4">
                                         <label for="nama_anggota_keluarga_edit" class="form-label">Nama</label>
                                         <input type="text" id="nama_anggota_keluarga_edit"
                                             name="nama_anggota_keluarga_edit" class="form-control"
                                             placeholder="Nama Lengkap" value="{{ $anggota->nama }}" required>
                                     </div>
-                                </div>
-                                <div class="row g-4">
                                     <div class="col mb-4">
                                         <label for="jenis_kelamin_edit" class="form-label">Jenis Kelamin</label>
                                         <select id="jenis_kelamin_edit" name="jenis_kelamin_edit" class="form-select"
@@ -307,20 +463,33 @@
                                             </option>
                                         </select>
                                     </div>
-                                    <div class="col mb-0">
+                                </div>
+                                <div class="row g-4">
+                                    <div class="col mb-4">
                                         <label for="tanggal_lahir_edit" class="form-label">Tanggal Lahir</label>
                                         <input type="date" id="tanggal_lahir_edit" name="tanggal_lahir_edit"
                                             class="form-control" value="{{ $anggota->tanggal_lahir }}">
+                                    </div>
+                                    <div class="col mb-4">
+                                        <label for="urutan_edit" class="form-label">Urutan</label>
+                                        <select id="urutan_edit" name="urutan_edit" class="form-select" required>
+                                            @for ($i = 1; $i <= 14; $i++)
+                                                <option value="{{ $i }}"
+                                                    {{ $anggota->urutan == $i ? 'selected' : '' }}>{{ $i }}
+                                                </option>
+                                            @endfor
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="row g-4">
                                     <div class="col mb-4">
                                         <label for="parent_id_edit" class="form-label">Orang Tua</label>
-                                        <select id="parent_id_edit" name="parent_id_edit" class="form-select">
+                                        <select id="parent_id_edit" name="parent_id_edit" class="form-select"
+                                            onload="loadPartnersEdit(this.value)">
                                             <option value="">Pilih Orang Tua</option>
                                             @foreach ($existingMembers as $member)
                                                 <option value="{{ $member->id }}"
-                                                    {{ $anggota->parent_id == $member->id || old('parent_id') == $member->id ? 'selected' : '' }}>
+                                                    {{ $anggota->parent_id == $member->id ? 'selected' : '' }}>
                                                     {{ $member->nama }}
                                                     @if ($member->jenis_kelamin === 'Laki-Laki')
                                                         (Pak)
@@ -331,14 +500,17 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div class="col mb-0">
-                                        <label for="urutan_edit" class="form-label">Urutan</label>
-                                        <select id="urutan_edit" name="urutan_edit" class="form-select" required>
-                                            @for ($i = 1; $i <= 14; $i++)
-                                                <option value="{{ $i }}"
-                                                    {{ $anggota->urutan == $i ? 'selected' : '' }}>{{ $i }}
+
+                                    <div class="col mb-4">
+                                        <label for="parent2_id_edit" class="form-label">Orang Tua 2 (Pasangan)</label>
+                                        <select id="parent2_id_edit" name="parent2_id_edit" class="form-select">
+                                            <option value="">Pilih Pasangan</option>
+                                            @foreach ($rootPartner as $partner)
+                                                <option value="{{ $partner->id }}"
+                                                    {{ $anggota->parent_partner_id == $partner->id ? 'selected' : '' }}>
+                                                    {{ $partner->nama }}
                                                 </option>
-                                            @endfor
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>
@@ -418,13 +590,288 @@
                 </div>
             </div>
         @endforeach
+
+        <div class="modal fade" id="addPartnerModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel3">Tambah Pasangan Keluarga</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{{ route('pasangan.anggota.keluarga.store') }}" method="POST"
+                        enctype="multipart/form-data">
+                        @csrf
+                        <div class="modal-body">
+                            <input type="hidden" name="tree_id" value="{{ $trahs->id }}">
+                            <div class="row">
+                                <div class="col mb-4">
+                                    <label for="nama_pasangan_anggota_keluarga" class="form-label">Nama <span
+                                            style="color: red">*</span></label>
+                                    <input type="text" id="nama_pasangan_anggota_keluarga"
+                                        name="nama_pasangan_anggota_keluarga" class="form-control"
+                                        placeholder="Nama Lengkap" required>
+                                </div>
+                            </div>
+                            <div class="row g-4">
+                                <div class="col mb-4">
+                                    <label for="jenis_kelamin" class="form-label">Jenis Kelamin <span
+                                            style="color: red">*</span></label>
+                                    <select id="jenis_kelamin" name="jenis_kelamin" class="form-select" required>
+                                        <option value="">Pilih Jenis Kelamin</option>
+                                        <option value="Laki-laki">Laki-laki</option>
+                                        <option value="Perempuan">Perempuan</option>
+                                    </select>
+                                </div>
+                                <div class="col mb-0">
+                                    <label for="tanggal_lahir" class="form-label">Tanggal Lahir</label>
+                                    <input type="date" id="tanggal_lahir" name="tanggal_lahir" class="form-control">
+                                </div>
+                            </div>
+                            <div class="row g-4">
+                                <div class="col mb-4">
+                                    <label for="partner_id" class="form-label">Pasangan Dari <span
+                                            style="color: red">*</span></label>
+                                    <select id="partner_id" name="partner_id" class="form-select">
+                                        <option value="">Pilih Anggota Keluarga</option>
+                                        @foreach ($existingMembers as $member)
+                                            <option value="{{ $member->id }}">
+                                                {{ $member->nama }}
+                                                @if ($member->jenis_kelamin === 'Laki-Laki')
+                                                    (Tn)
+                                                @else
+                                                    (Ny)
+                                                @endif
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col mb-0">
+                                    <label for="urutan" class="form-label">Urutan</label>
+                                    <select id="urutan" name="urutan" class="form-select" required>
+                                        @for ($i = 1; $i <= 14; $i++)
+                                            <option value="{{ $i }}">{{ $i }}</option>
+                                        @endfor
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row g-4">
+                                <div class="col mb-4">
+                                    <label for="status_kehidupan" class="form-label">Status Kehidupan</label>
+                                    <select id="status_kehidupan" name="status_kehidupan" class="form-select" required>
+                                        <option value="Hidup" selected>Hidup</option>
+                                        <option value="Wafat">Wafat</option>
+                                    </select>
+                                </div>
+                                <div class="col mb-0">
+                                    <label for="tanggal_kematian" class="form-label">Tanggal Kematian</label>
+                                    <input type="date" id="tanggal_kematian" name="tanggal_kematian"
+                                        class="form-control">
+                                </div>
+                            </div>
+                            <div class="row g-4">
+                                <div class="col mb-4">
+                                    <div class="mb-3">
+                                        <label for="partner_image" class="form-label">Upload Foto</label>
+                                        <img src="" class="img-thumbnail image-preview mb-3"
+                                            style="display: none; max-width: 100px; max-height: 100px;">
+                                        <input class="form-control" type="file" id="partner_image"
+                                            name="partner_image" accept="image/*" onchange="previewImage(this)">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Tutup</button>
+                            <button type="submit" class="btn btn-primary">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        @foreach ($anggota_keluarga as $anggota)
+            @foreach ($anggota->partners as $partner)
+                <div class="modal fade" id="editPartnerMemberModal{{ $partner->id }}" tabindex="-1"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel3">Edit Pasangan Keluarga</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <form action="{{ route('pasangan.anggota.keluarga.update', $partner->id) }}" method="POST"
+                                enctype="multipart/form-data">
+                                @csrf
+                                @method('PUT')
+                                <div class="modal-body">
+                                    <input type="hidden" name="tree_id" value="{{ $trah->id }}">
+                                    <div class="row">
+                                        <div class="col mb-4">
+                                            <label for="nama_pasangan_edit" class="form-label">Nama <span
+                                                    style="color: red">*</span></label>
+                                            <input type="text" id="nama_pasangan_edit" name="nama_pasangan_edit"
+                                                class="form-control" placeholder="Nama Lengkap"
+                                                value="{{ $partner->nama }}" required>
+                                        </div>
+                                    </div>
+                                    <div class="row g-4">
+                                        <div class="col mb-4">
+                                            <label for="jenis_kelamin_edit" class="form-label">Jenis Kelamin <span
+                                                    style="color: red">*</span></label>
+                                            <select id="jenis_kelamin_edit" name="jenis_kelamin_edit" class="form-select"
+                                                required>
+                                                <option value="Laki-laki"
+                                                    {{ $partner->jenis_kelamin == 'Laki-laki' ? 'selected' : '' }}>
+                                                    Laki-laki</option>
+                                                <option value="Perempuan"
+                                                    {{ $partner->jenis_kelamin == 'Perempuan' ? 'selected' : '' }}>
+                                                    Perempuan</option>
+                                            </select>
+                                        </div>
+                                        <div class="col mb-0">
+                                            <label for="tanggal_lahir_edit" class="form-label">Tanggal Lahir</label>
+                                            <input type="date" id="tanggal_lahir_edit" name="tanggal_lahir_edit"
+                                                class="form-control"
+                                                value="{{ $partner->tanggal_lahir ? \Carbon\Carbon::parse($partner->tanggal_lahir)->format('Y-m-d') : '' }}">
+                                        </div>
+                                    </div>
+                                    <div class="row g-4">
+                                        <div class="col mb-4">
+                                            <label for="partner_id_edit" class="form-label">Pasangan Dari <span
+                                                    style="color: red">*</span></label>
+                                            <select id="partner_id_edit" name="partner_id_edit" class="form-select"
+                                                required>
+                                                @foreach ($existingMembers as $member)
+                                                    <option value="{{ $member->id }}"
+                                                        {{ $partner->anggota_keluarga_id == $member->id ? 'selected' : '' }}>
+                                                        {{ $member->nama }}
+                                                        @if ($member->jenis_kelamin === 'Laki-Laki')
+                                                            (Tn)
+                                                        @else
+                                                            (Ny)
+                                                        @endif
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="col mb-0">
+                                            <label for="urutan_edit" class="form-label">Urutan</label>
+                                            <select id="urutan_edit" name="urutan_edit" class="form-select" required>
+                                                @for ($i = 1; $i <= 14; $i++)
+                                                    <option value="{{ $i }}"
+                                                        {{ $partner->urutan == $i ? 'selected' : '' }}>{{ $i }}
+                                                    </option>
+                                                @endfor
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row g-4">
+                                        <div class="col mb-4">
+                                            <label for="status_kehidupan_edit" class="form-label">Status Kehidupan</label>
+                                            <select id="status_kehidupan_edit" name="status_kehidupan_edit"
+                                                class="form-select" required>
+                                                <option value="Hidup"
+                                                    {{ $partner->status_kehidupan == 'Hidup' ? 'selected' : '' }}>Hidup
+                                                </option>
+                                                <option value="Wafat"
+                                                    {{ $partner->status_kehidupan == 'Wafat' ? 'selected' : '' }}>Wafat
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div class="col mb-0">
+                                            <label for="tanggal_kematian_edit" class="form-label">Tanggal Kematian</label>
+                                            <input type="date" id="tanggal_kematian_edit" name="tanggal_kematian_edit"
+                                                class="form-control"
+                                                value="{{ $partner->tanggal_kematian ? \Carbon\Carbon::parse($partner->tanggal_kematian)->format('Y-m-d') : '' }}">
+                                        </div>
+                                    </div>
+                                    {{-- <div class="row g-4">
+                                <div class="col mb-4">
+                                    <label for="alamat_edit" class="form-label">Alamat</label>
+                                    <textarea class="form-control" id="alamat_edit" name="alamat_edit" required>{{ $partner->alamat }}</textarea>
+                                </div>
+                            </div> --}}
+                                    <div class="row g-4">
+                                        <div class="col mb-4">
+                                            <div class="mb-3">
+                                                <label for="foto_pasangan_edit" class="form-label">Upload Foto</label>
+                                                @if ($partner->photo)
+                                                    <img src="{{ asset('storage/' . $partner->photo) }}"
+                                                        class="img-thumbnail image-preview mb-3"
+                                                        style="max-width: 100px; max-height: 100px;">
+                                                @else
+                                                    <img src="" class="img-thumbnail image-preview mb-3"
+                                                        style="display: none; max-width: 100px; max-height: 100px;">
+                                                @endif
+                                                <input class="form-control" type="file" id="foto_pasangan_edit"
+                                                    name="foto_pasangan_edit" accept="image/*"
+                                                    onchange="previewImage(this)">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-label-secondary"
+                                        data-bs-dismiss="modal">Tutup</button>
+                                    <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="deletePartnerMemberModal{{ $partner->id }}" data-bs-backdrop="static"
+                    tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header text-center">
+                                <h5 class="modal-title" id="backDropModalTitle">Hapus Pasangan Ini?</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body justify-content-center text-center">
+                                <i class="fa-solid fa-triangle-exclamation fa-beat"
+                                    style="color: #FF0000; font-size: 100px"></i>
+                                <span class="d-block mt-5">Anda yakin ingin menghapus pasangan
+                                    {{ $partner->nama_pasangan_anggota_keluarga }}? Data yang terhapus tidak dapat
+                                    dikembalikan.</span>
+                            </div>
+                            <div class="modal-footer justify-content-center">
+                                <form method="POST"
+                                    action="{{ route('pasangan.anggota.keluarga.delete', $partner->id) }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Batal</button>
+                                    <button type="submit" class="btn btn-danger">Hapus</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        @endforeach
+
+    </div>
+
+    <div class="card mb-3">
+        @if ($trahs->trah_name)
+            <h5 class="card-header d-flex flex-column fw-bold">
+                {{ $trahs->trah_name }}
+                @if ($trahs->description)
+                    <small class="fw-light">{{ $trahs->description }}</small>
+                @endif
+            </h5>
+        @endif
     </div>
 
     <div class="nav-align-top">
         <ul class="nav nav-pills mb-4 nav-fill bg-white p-2" role="tablist">
             <li class="nav-item mb-1 mb-sm-0">
                 <button type="button" class="nav-link {{ !request()->has('compare') ? 'active' : '' }}" role="tab"
-                    data-bs-toggle="tab" data-bs-target="#navs-pills-justified-home" aria-controls="navs-pills-justified-home"
+                    data-bs-toggle="tab" data-bs-target="#navs-pills-justified-home"
+                    aria-controls="navs-pills-justified-home"
                     aria-selected="{{ !request()->has('compare') ? 'true' : 'false' }}">
                     <span class="d-none d-sm-inline-flex align-items-center">
                         <i class="fa-solid fa-person me-2"></i>Data Keluarga
@@ -454,12 +901,11 @@
             </li>
         </ul>
     </div>
-
     <div class="card">
         <div class="tab-content">
-            <div class="tab-pane fade {{ !request()->has('compare') ? 'active show' : '' }}" id="navs-pills-justified-home"
-                role="tabpanel">
-                <div class="row">
+            <div class="tab-pane fade {{ !request()->has('compare') ? 'show active' : '' }}"
+                id="navs-pills-justified-home" role="tabpanel">
+                <div class="">
                     <div class="nav-align-top">
                         <ul class="nav nav-tabs" role="tablist">
                             <li class="nav-item">
@@ -711,12 +1157,13 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
+                                                        @php $counter = 1; @endphp
                                                         @foreach ($anggota_keluarga as $anggota)
                                                             @foreach ($anggota->partners as $partner)
                                                                 <tr class="odd">
                                                                     <td class="text-center col-no"
                                                                         style="overflow: hidden;">
-                                                                        {{ $loop->iteration }}
+                                                                        {{ $counter++ }}
                                                                     </td>
                                                                     <td class="" style="overflow: hidden">
                                                                         <div class="ellipsis text-center">
@@ -730,7 +1177,7 @@
                                                                     </td>
                                                                     <td class="" style="overflow: hidden">
                                                                         <div class="ellipsis text-center">
-                                                                            {{ \Carbon\Carbon::parse($partner->tanggal_lahir)->translatedFormat('d-F-Y') }}
+                                                                            {{ $partner->tanggal_lahir ? \Carbon\Carbon::parse($partner->tanggal_lahir)->translatedFormat('d-F-Y') : 'Belum diketahui' }}
                                                                         </div>
                                                                     </td>
                                                                     <td class="" style="overflow: hidden">
@@ -793,28 +1240,504 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Tab kedua (Pohon Keluarga) -->
-            <div class="tab-pane fade" id="navs-pills-justified-profile" role="tabpanel">
-                <div class="row">
-                    <div class="tree">
-                        <ul>
-                            @foreach ($rootMember as $member)
-                                @include('partials.family-member', ['member' => $member])
-                            @endforeach
-                        </ul>
+            <div class="tab-pane fade grab" id="navs-pills-justified-profile" role="tabpanel">
+                <div class="container flex-wrap overflow-auto">
+                    <div class="row justify-center">
+                        <h1 class="fw-bold" style="color: #000 !important; text-transform: capitalize;">
+                            {{ $trah->tree_name }}</h1>
+                        <div class="tree justify-content-center">
+                            <ul>
+                                @foreach ($rootMember as $member)
+                                    @include('partials.family-member', ['member' => $member])
+                                @endforeach
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Tab ketiga (Hubungan) -->
-            <div class="tab-pane fade {{ request()->has('compare') ? 'active show' : '' }}"
+            <!-- BAGIAN HUBUNGAN KELUARGA -->
+            <div class="tab-pane fade {{ request()->has('compare') ? 'show active' : '' }}"
                 id="navs-pills-justified-messages" role="tabpanel">
-                <!-- Konten tab hubungan -->
+                {{-- ini page 3 --}}
+                <div class="mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title text-center w-100">Perbandingan Hubungan Keluarga</h5>
+
+                        <form action="{{ route('keluarga.detail.public', $tree_id) }}" method="GET">
+                            @csrf
+                            <input type="hidden" name="tree_id" value="{{ $tree_id }}">
+                            <input type="hidden" name="compare" value="true">
+
+                            <div class="container px-4">
+                                <div class="row gx-5">
+                                    <div class="col">
+                                        <div class="mb-3">
+                                            <label for="person1" class="form-label text-center w-100">Pilih Anggota
+                                                Keluarga 1:</label>
+                                            <div class="d-flex justify-content-center">
+                                                <select name="name1" id="person1" class="form-control" required>
+                                                    <option value="" style="color: gray;">-- Pilih --</option>
+                                                    @foreach ($anggota_keluarga as $trah)
+                                                        <option value="{{ $trah->nama }}" style="color: black;"
+                                                            {{ old('name1', $person1->nama ?? '') == $trah->nama ? 'selected' : '' }}>
+                                                            {{ $trah->nama }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col">
+                                        <div class="mb-3">
+                                            <label for="person2" class="form-label text-center w-100">Pilih Anggota
+                                                Keluarga 2:</label>
+                                            <select name="name2" id="person2" class="form-control" required>
+                                                <option value="" style="color: gray;">-- Pilih --</option>
+                                                @foreach ($anggota_keluarga as $trah)
+                                                    <option value="{{ $trah->nama }}"
+                                                        {{ old('name2', $person2->nama ?? '') == $trah->nama ? 'selected' : '' }}>
+                                                        {{ $trah->nama }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row gx-5">
+                                <button type="submit" class="btn btn-danger mx-6">Bandingkan Hubungan</button>
+                                <div class="col d-flex justify-content-center align-items-center">
+                                </div>
+                            </div>
+                        </form>
+
+
+                        <!-- tabel hasil hubungan -->
+                        @if (isset($relationshipDetails) && isset($relationshipDetailsReversed))
+                            <div class="row" id="relationship-details">
+                                <h3 class="text-center text-lg font-semibold mb-1 mt-1">Hasil Perbandingan</h3>
+
+                                <!-- Kolom hubungan anggota 1 -->
+                                <div class="col-md-6">
+                                    <div class="bg-white shadow-md p-5 rounded-md mt-3">
+                                        @if (is_array($relationshipDetails))
+                                            <div
+                                                class="bg-[#FEF3C7] flex justify-center text-gray-800 p-3 rounded-md mb-3">
+                                                {{ $relationshipDetails['relation'] }}
+                                            </div>
+                                            @if (!empty($relationshipDetails['detailedPath']))
+                                                <div class="bg-[#FEF3C7] text-gray-800 p-3 rounded-md mb-3">
+                                                    <strong class="flex justify-center mb-3">Jalur Hubungan
+                                                        Keluarga:</strong>
+                                                    <ul class="list-group mt-2">
+                                                        @foreach ($relationshipDetails['detailedPath'] as $detail)
+                                                            <li class="list-group-item">{{ $detail }}</li>
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+                                            @elseif(isset($path) && count($path))
+                                                <div class="bg-[#FEF3C7] text-gray-800 p-3 rounded-md mb-3">
+                                                    <strong>Jalur (BFS fallback):</strong>
+                                                    <p>
+                                                        {{ implode(' → ', array_map(fn($m) => $m->nama, $path)) }}
+                                                    </p>
+                                                </div>
+                                            @endif
+                                        @else
+                                            <div class="alert alert-warning">{{ $relationshipDetails }}</div>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <!-- Kolom hubungan keluarga 2 -->
+                                <div class="col-md-6 mt-4 mt-md-0">
+                                    <div class="bg-white shadow-md p-5 rounded-md mt-3">
+                                        @if (is_array($relationshipDetailsReversed))
+                                            <div
+                                                class="bg-[#FEF3C7] flex justify-center text-gray-800 p-3 rounded-md mb-3">
+                                                {{ $relationshipDetailsReversed['relation'] }}
+                                            </div>
+                                            @if (!empty($relationshipDetailsReversed['detailedPath']))
+                                                <div class="bg-[#FEF3C7] text-gray-800 p-3 rounded-md mb-3">
+                                                    <strong class="flex justify-center mb-3">Jalur Hubungan
+                                                        Keluarga:</strong>
+                                                    <ul class="list-group mt-2">
+                                                        @foreach ($relationshipDetailsReversed['detailedPath'] as $detail)
+                                                            <li class="list-group-item">{{ $detail }}</li>
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+                                            @elseif(isset($pathRev) && count($pathRev))
+                                                <div class="bg-[#FEF3C7] text-gray-800 p-3 rounded-md mb-3">
+                                                    <strong>Jalur (BFS fallback):</strong>
+                                                    <p>
+                                                        {{ implode(' → ', array_map(fn($m) => $m->nama, $pathRev)) }}
+                                                    </p>
+                                                </div>
+                                            @endif
+                                        @else
+                                            <div class="alert alert-warning">{{ $relationshipDetailsReversed }}</div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
+                        {{-- <div class="d-grid gap-2 mt-4">
+                            <button type="button" class="btn btn-danger" onclick="resetForm();">Reset</button>
+                        </div> --}}
+
+                        @if (isset($relationshipDetails) && isset($relationshipDetailsReversed))
+                            <script>
+                                window.onload = () => {
+                                    document.getElementById('relationship-details')?.scrollIntoView({
+                                        behavior: 'smooth'
+                                    });
+                                }
+                            </script>
+                        @endif
+
+                        <script>
+                            function resetForm() {
+                                document.querySelector("form").reset();
+                                document.querySelector("#person1").selectedIndex = 0;
+                                document.querySelector("#person2").selectedIndex = 0;
+                                document.getElementById("relationship-details").innerHTML = ''; // Clear results
+                            }
+                        </script>
+                    </div>
+                </div>
             </div>
         </div>
-
     </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#relationshipComparisonForm').submit(function(e) {
+                e.preventDefault();
+
+                // Tampilkan loading
+                $('#relationInfo').html(
+                    '<div class="text-center"><i class="fas fa-spinner fa-spin fa-2x"></i> Memproses...</div>'
+                );
+                $('#relationshipResult').show();
+
+                $.ajax({
+                    url: "{{ route('pasangan.anggota.keluarga.compare') }}",
+                    method: "POST",
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        // Tampilkan hasil hubungan
+                        let html = `
+                    <div class="relation-result">
+                        <p><strong>${response.person1.name}</strong> → <strong>${response.person2.name}</strong>: 
+                        ${response.relationship1to2.relation}</p>
+                        <p><strong>${response.person2.name}</strong> → <strong>${response.person1.name}</strong>: 
+                        ${response.relationship2to1.relation}</p>
+                    </div>
+                `;
+                        $('#relationInfo').html(html);
+
+                        // Tampilkan detail jalur hubungan jika ada
+                        if (response.relationship1to2.detailedPath.length > 0) {
+                            let detailsHtml =
+                                '<h6>Detail Hubungan:</h6><ul class="list-group">';
+                            response.relationship1to2.detailedPath.forEach(step => {
+                                detailsHtml +=
+                                    `<li class="list-group-item">${step}</li>`;
+                            });
+                            detailsHtml += '</ul>';
+                            $('#relationDetails').html(detailsHtml);
+                        }
+                    },
+                    error: function(xhr) {
+                        let errorMessage = 'Terjadi kesalahan saat memproses';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+                        $('#relationInfo').html(
+                            `<div class="alert alert-danger">${errorMessage}</div>`);
+                        $('#relationDetails').empty();
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script>
+        const partnersData = {
+            @foreach ($anggota_keluarga as $member)
+                "{{ $member->id }}": [
+                    @foreach ($member->partners as $partner)
+                        {
+                            id: "{{ $partner->id }}",
+                            nama: "{{ $partner->nama }}",
+                            jenis_kelamin: "{{ $partner->jenis_kelamin }}"
+                        },
+                    @endforeach
+                ],
+            @endforeach
+        };
+
+        function loadPartners() {
+            const parent1Select = document.getElementById('parent1_id');
+            const parent2Select = document.getElementById('parent2_id');
+            const selectedId = parent1Select.value;
+
+            // Reset partner dropdown
+            parent2Select.innerHTML = '<option value="">Pilih Pasangan</option>';
+            parent2Select.disabled = true;
+
+            if (!selectedId) return;
+
+            // Enable and load partners if available
+            const partners = partnersData[selectedId];
+            if (partners && partners.length > 0) {
+                parent2Select.disabled = false;
+
+                partners.forEach(partner => {
+                    const option = document.createElement('option');
+                    option.value = partner.id;
+                    option.textContent =
+                        `${partner.nama} (${partner.jenis_kelamin === 'Laki-Laki' ? 'Pak' : 'Ibu'})`;
+
+                    // Set selected if this was the old value
+                    if ("{{ old('parent2_id') }}" == partner.id) {
+                        option.selected = true;
+                    }
+
+                    parent2Select.appendChild(option);
+                });
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            if (document.getElementById('parent1_id').value) {
+                loadPartners();
+            }
+        });
+        document.addEventListener('DOMContentLoaded', function() {
+            const table = document.getElementById('datatables');
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            const entriesSelect = document.getElementById('entriesPerPage');
+            const searchInput = document.getElementById('searchInput');
+            const infoLabel = document.getElementById('datatables_info');
+            const pagination = document.getElementById('pagination');
+
+            let currentPage = 1;
+            let entriesPerPage = parseInt(entriesSelect.value);
+            let filteredRows = rows;
+
+            // Fungsi untuk memfilter baris berdasarkan pencarian
+            function filterRows() {
+                const searchTerm = searchInput.value.toLowerCase();
+
+                if (searchTerm === '') {
+                    filteredRows = rows;
+                } else {
+                    filteredRows = rows.filter(row => {
+                        const cells = row.querySelectorAll('td');
+                        return Array.from(cells).some(cell =>
+                            cell.textContent.toLowerCase().includes(searchTerm)
+                        );
+                    });
+                }
+
+                currentPage = 1;
+                updateTable();
+            }
+
+            // Fungsi untuk memperbarui tampilan tabel
+            function updateTable() {
+                const startIndex = (currentPage - 1) * entriesPerPage;
+                const endIndex = startIndex + entriesPerPage;
+                const paginatedRows = filteredRows.slice(startIndex, endIndex);
+
+                // Sembunyikan semua baris
+                rows.forEach(row => row.style.display = 'none');
+
+                // Tampilkan baris yang sesuai dengan halaman saat ini
+                paginatedRows.forEach(row => row.style.display = '');
+
+                // Update info label
+                const totalRows = filteredRows.length;
+                const startRow = totalRows > 0 ? startIndex + 1 : 0;
+                const endRow = Math.min(endIndex, totalRows);
+
+                infoLabel.textContent = `Showing ${startRow} to ${endRow} of ${totalRows} entries`;
+
+                // Update pagination
+                updatePagination(totalRows);
+            }
+
+            // Fungsi untuk memperbarui tampilan pagination
+            function updatePagination(totalRows) {
+                pagination.innerHTML = '';
+                const totalPages = Math.ceil(totalRows / entriesPerPage);
+
+                // Tombol Previous
+                const prevLi = document.createElement('li');
+                prevLi.className = `paginate_button page-item previous ${currentPage === 1 ? 'disabled' : ''}`;
+                prevLi.innerHTML = '<a href="#" class="page-link">Previous</a>';
+                prevLi.addEventListener('click', e => {
+                    e.preventDefault();
+                    if (currentPage > 1) {
+                        currentPage--;
+                        updateTable();
+                    }
+                });
+                pagination.appendChild(prevLi);
+
+                // Tombol halaman
+                const maxVisiblePages = 5;
+                let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+                let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+                if (endPage - startPage + 1 < maxVisiblePages) {
+                    startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                }
+
+                if (startPage > 1) {
+                    const firstLi = document.createElement('li');
+                    firstLi.className = 'paginate_button page-item';
+                    firstLi.innerHTML = '<a href="#" class="page-link">1</a>';
+                    firstLi.addEventListener('click', e => {
+                        e.preventDefault();
+                        currentPage = 1;
+                        updateTable();
+                    });
+                    pagination.appendChild(firstLi);
+
+                    if (startPage > 2) {
+                        const ellipsisLi = document.createElement('li');
+                        ellipsisLi.className = 'paginate_button page-item disabled';
+                        ellipsisLi.innerHTML = '<a href="#" class="page-link">...</a>';
+                        pagination.appendChild(ellipsisLi);
+                    }
+                }
+
+                for (let i = startPage; i <= endPage; i++) {
+                    const pageLi = document.createElement('li');
+                    pageLi.className = `paginate_button page-item ${i === currentPage ? 'active' : ''}`;
+                    pageLi.innerHTML = `<a href="#" class="page-link">${i}</a>`;
+                    pageLi.addEventListener('click', e => {
+                        e.preventDefault();
+                        currentPage = i;
+                        updateTable();
+                    });
+                    pagination.appendChild(pageLi);
+                }
+
+                if (endPage < totalPages) {
+                    if (endPage < totalPages - 1) {
+                        const ellipsisLi = document.createElement('li');
+                        ellipsisLi.className = 'paginate_button page-item disabled';
+                        ellipsisLi.innerHTML = '<a href="#" class="page-link">...</a>';
+                        pagination.appendChild(ellipsisLi);
+                    }
+
+                    const lastLi = document.createElement('li');
+                    lastLi.className = 'paginate_button page-item';
+                    lastLi.innerHTML = `<a href="#" class="page-link">${totalPages}</a>`;
+                    lastLi.addEventListener('click', e => {
+                        e.preventDefault();
+                        currentPage = totalPages;
+                        updateTable();
+                    });
+                    pagination.appendChild(lastLi);
+                }
+
+                // Tombol Next
+                const nextLi = document.createElement('li');
+                nextLi.className = `paginate_button page-item next ${currentPage === totalPages ? 'disabled' : ''}`;
+                nextLi.innerHTML = '<a href="#" class="page-link">Next</a>';
+                nextLi.addEventListener('click', e => {
+                    e.preventDefault();
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        updateTable();
+                    }
+                });
+                pagination.appendChild(nextLi);
+            }
+
+            // Event listeners
+            entriesSelect.addEventListener('change', function() {
+                entriesPerPage = parseInt(this.value);
+                currentPage = 1;
+                updateTable();
+            });
+
+            searchInput.addEventListener('input', function() {
+                filterRows();
+            });
+
+            // Inisialisasi tabel
+            updateTable();
+        });
+    </script>
+
+    {{-- <script>
+        // Data pasangan untuk form edit
+        const partnersDataEdit = {
+            @foreach ($existingMembers as $member)
+                "{{ $member->id }}": [
+                    @foreach ($member->partners as $partner)
+                        {
+                            id: "{{ $partner->id }}",
+                            nama: "{{ $partner->nama }}",
+                            jenis_kelamin: "{{ $partner->jenis_kelamin }}"
+                        },
+                    @endforeach
+                ],
+            @endforeach
+        };
+
+        function loadPartnersEdit() {
+            const parent1Select = document.getElementById('parent_id_edit');
+            const parent2Select = document.getElementById('parent2_id_edit');
+            const selectedId = parent1Select.value;
+
+            // Reset partner dropdown
+            parent2Select.innerHTML = '<option value="">Pilih Pasangan</option>';
+            parent2Select.disabled = true;
+
+            if (!selectedId) return;
+
+            // Enable and load partners if available
+            const partners = partnersDataEdit[selectedId];
+            if (partners && partners.length > 0) {
+                parent2Select.disabled = false;
+
+                partners.forEach(partner => {
+                    const option = document.createElement('option');
+                    option.value = partner.id;
+                    option.textContent =
+                        `${partner.nama} (${partner.jenis_kelamin === 'Laki-Laki' ? 'Pak' : 'Ibu'})`;
+
+                    // Set selected jika ini adalah pasangan yang sudah ada
+                    if ("{{ $anggota->parent_partner_id }}" == partner.id) {
+                        option.selected = true;
+                    }
+
+                    parent2Select.appendChild(option);
+                });
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Panggil saat pertama kali load
+            loadPartnersEdit();
+
+            // Tambahkan event listener untuk perubahan
+            document.getElementById('parent_id_edit').addEventListener('change', loadPartnersEdit);
+        });
+    </script> --}}
 
 
 @endsection

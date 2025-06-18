@@ -25,7 +25,7 @@ class AdminController extends Controller
 
     //dashboard
     public function index(){
-        return view('admin.dashboard');
+        return redirect()->route('admin.keluarga');
     }
 
     public function keluarga(){
