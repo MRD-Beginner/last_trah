@@ -1242,7 +1242,7 @@
                 {{-- ini page 3 --}}
                 <div class="mb-4">
                     <div class="card-body">
-                        <h5 class="card-title text-center w-100">Perbandingan Hubungan Keluarga</h5>
+                        <!-- <h5 class="card-title text-center w-100">Perbandingan Hubungan Keluarga</h5> -->
 
                         <form action="{{ route('keluarga.detail.public', $tree_id) }}" method="GET">
                             @csrf
@@ -1287,25 +1287,26 @@
                                 </div>
                             </div>
 
-                            <div class="row gx-5">
-                                <button type="submit" class="btn btn-danger mx-6">Bandingkan Hubungan</button>
-                                <div class="col d-flex justify-content-center align-items-center">
-                                </div>
+                        <div class="row g-3">
+                            <div class="col-12 text-center">
+                                <button type="submit" class="btn btn-primary w-100 rounded-pill">Cari hubungannya yuk</button>
                             </div>
+                        </div>
                         </form>
 
 
                         <!-- tabel hasil hubungan -->
                         @if (isset($relationshipDetails) && isset($relationshipDetailsReversed))
                             <div class="row" id="relationship-details">
-                                <h3 class="text-center text-lg font-semibold mb-1 mt-1">Hasil Perbandingan</h3>
+                            
+                                <h4 class="text-center text-lg font-semibold mb-5 mt-5">Hasil Perbandingan</h4>
 
                                 <!-- Kolom hubungan anggota 1 -->
                                 <div class="col-md-6">
                                     <div class="bg-white shadow-md p-5 rounded-md mt-3">
                                         @if (is_array($relationshipDetails))
                                             <div
-                                                class="bg-[#FEF3C7] flex justify-center text-gray-800 p-3 rounded-md mb-3">
+                                                class="bg-primary text-white text-center rounded-pill p-3 mb-3">
                                                 {{ $relationshipDetails['relation'] }}
                                             </div>
                                             @if (!empty($relationshipDetails['detailedPath']))
@@ -1337,7 +1338,7 @@
                                     <div class="bg-white shadow-md p-5 rounded-md mt-3">
                                         @if (is_array($relationshipDetailsReversed))
                                             <div
-                                                class="bg-[#FEF3C7] flex justify-center text-gray-800 p-3 rounded-md mb-3">
+                                                class="bg-primary  text-white text-center rounded-pill p-3 mb-3">
                                                 {{ $relationshipDetailsReversed['relation'] }}
                                             </div>
                                             @if (!empty($relationshipDetailsReversed['detailedPath']))
@@ -1362,13 +1363,22 @@
                                             <div class="alert alert-warning">{{ $relationshipDetailsReversed }}</div>
                                         @endif
                                     </div>
+
                                 </div>
+
                             </div>
                         @endif
 
-                        {{-- <div class="d-grid gap-2 mt-4">
-                            <button type="button" class="btn btn-danger" onclick="resetForm();">Reset</button>
-                        </div> --}}
+                        <!-- <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1030;">
+
+                            <button type="button" class="btn btn-danger btn-lg rounded-circle d-flex align-items-center justify-content-center" 
+                                    style="width: 60px; height: 60px;" onclick="resetForm();" title="Reset Form">
+                                <i class="fas fa-undo"></i> </button>
+
+                        </div> -->
+                         <div class="d-flex justify-content-end mt-4">
+                            <button type="button" class="btn btn-danger rounded-pill" onclick="resetForm();"><i class="fas fa-undo"></i></button>
+                        </div> 
 
                         @if (isset($relationshipDetails) && isset($relationshipDetailsReversed))
                             <script>

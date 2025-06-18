@@ -311,7 +311,7 @@ class LogicController extends Controller
                 }
             } elseif ($depth === -1) {
                 if (optional($first->parent)->parent_id && $last->parent_id && $first->parent->parent_id === $last->parent_id) {
-                    $key = $last->urutan < $first->parent->urutan ? 'ponakan prunan' : 'ponakan';
+                    $key = $last->urutan < $first->parent->urutan ? 'ponakan_prunan' : 'ponakan';
                     return "{$first->nama} " . $relations[$key][$first->jenis_kelamin] . " {$last->nama}";
                 }
             }
