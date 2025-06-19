@@ -94,7 +94,7 @@
             text-align: center;
             z-index: 100;
             "><i
-                    class='bx bxs-heart-circle' style='color:#ff0095'></i>
+                    class='bx bxs-heart-circle bx-sm' style='color:#ff0095'></i>
             </small>
         @endif
 

@@ -12,7 +12,6 @@
 
 
 <style>
-    table {}
 
     th {
         background-color: #8c8efd !important;
@@ -72,7 +71,7 @@
                                 </div>
                                 <div class="avatar">
                                     <span class="avatar-initial rounded bg-label-primary">
-                                        <i class="icon-base bx bx-group icon-lg"></i>
+                                        <i class="icon-base bx bx-group bx-sm"></i>
                                     </span>
                                 </div>
                             </div>
@@ -93,7 +92,7 @@
                                 </div>
                                 <div class="avatar">
                                     <span class="avatar-initial rounded bg-label-danger">
-                                        <i class="icon-base bx bx-user-plus icon-lg"></i>
+                                        <i class="icon-base bx bx-user-plus bx-sm"></i>
                                     </span>
                                 </div>
                             </div>
@@ -114,7 +113,7 @@
                                 </div>
                                 <div class="avatar">
                                     <span class="avatar-initial rounded bg-label-success">
-                                        <i class="icon-base bx bx-user-check icon-lg"></i>
+                                        <i class="icon-base bx bx-user-check bx-sm"></i>
                                     </span>
                                 </div>
                             </div>
@@ -138,7 +137,7 @@
                                 </div>
                                 <div class="avatar">
                                     <span class="avatar-initial rounded bg-label-warning">
-                                        <i class="icon-base bx bx-user-voice icon-lg"></i>
+                                        <i class="icon-base bx bx-user-voice bx-sm"></i>
                                     </span>
                                 </div>
                             </div>
