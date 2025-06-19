@@ -740,7 +740,8 @@
                                             <select id="urutan_edit" name="urutan_edit" class="form-select" required>
                                                 @for ($i = 1; $i <= 14; $i++)
                                                     <option value="{{ $i }}"
-                                                        {{ $partner->urutan_anak == $i ? 'selected' : '' }}>{{ $i }}
+                                                        {{ $partner->urutan_anak == $i ? 'selected' : '' }}>
+                                                        {{ $i }}
                                                     </option>
                                                 @endfor
                                             </select>
@@ -848,38 +849,38 @@
 
     <div class="nav-align-top">
         <ul class="nav nav-pills mb-4 nav-fill bg-white p-2" role="tablist">
-            <li class="nav-item mb-1 mb-sm-0">
-                <button type="button" class="nav-link {{ !request()->has('compare') ? 'active' : '' }}" role="tab"
-                    data-bs-toggle="tab" data-bs-target="#navs-pills-justified-home"
-                    aria-controls="navs-pills-justified-home"
-                    aria-selected="{{ !request()->has('compare') ? 'true' : 'false' }}">
-                    <span class="d-none d-sm-inline-flex align-items-center">
-                        <i class="fa-solid fa-person me-2"></i>Data Keluarga
-                    </span>
-                    <i class="fa-solid fa-person icon-sm d-sm-none"></i>
-                </button>
-            </li>
-            <li class="nav-item mb-1 mb-sm-0">
-                <button type="button" class="nav-link" role="tab" data-bs-toggle="tab"
-                    data-bs-target="#navs-pills-justified-profile" aria-controls="navs-pills-justified-profile"
-                    aria-selected="false">
-                    <span class="d-none d-sm-inline-flex align-items-center">
-                        <i class="fa-solid fa-sitemap me-2"></i>Pohon Keluarga
-                    </span>
-                    <i class="fa-solid fa-sitemap icon-sm d-sm-none"></i>
-                </button>
-            </li>
-            <li class="nav-item">
-                <button type="button" class="nav-link {{ request()->has('compare') ? 'active' : '' }}" role="tab"
-                    data-bs-toggle="tab" data-bs-target="#navs-pills-justified-messages"
-                    aria-controls="navs-pills-justified-messages"
-                    aria-selected="{{ request()->has('compare') ? 'true' : 'false' }}">
-                    <span class="d-none d-sm-inline-flex align-items-center"><i
-                            class="fa-solid fa-link me-2"></i>Hubungan</span>
-                    <i class="fa-solid fa-link icon-sm d-sm-none"></i>
-                </button>
-            </li>
-        </ul>
+                <li class="nav-item mb-1 mb-sm-0">
+                    <button type="button" class="nav-link active"
+                        role="tab" data-bs-toggle="tab" data-bs-target="#navs-pills-justified-home"
+                        aria-controls="navs-pills-justified-home"
+                        aria-selected="true">
+                        <span class="d-none d-sm-inline-flex align-items-center">
+                            <i class="fa-solid fa-person me-2"></i>Data Keluarga
+                        </span>
+                        <i class="fa-solid fa-person icon-sm d-sm-none"></i>
+                    </button>
+                </li>
+                <li class="nav-item mb-1 mb-sm-0">
+                    <a href="{{ route('keluarga.detail.pohon', $tree_id) }}"
+                        class="nav-link {{ request()->is('detail/public/data/keluarga/pohon/*') ? 'active' : '' }}"
+                        role="tab">
+                        <span class="d-none d-sm-inline-flex align-items-center">
+                            <i class="fa-solid fa-sitemap me-2"></i>Pohon Keluarga
+                        </span>
+                        <i class="fa-solid fa-sitemap icon-sm d-sm-none"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('keluarga.detail.hubungan', $tree_id) }}"
+                        class="nav-link {{ request()->is('detail/public/data/keluarga/hubungan/*') ? 'active' : '' }}"
+                        role="tab">
+                        <span class="d-none d-sm-inline-flex align-items-center">
+                            <i class="fa-solid fa-link me-2"></i>Hubungan
+                        </span>
+                        <i class="fa-solid fa-link icon-sm d-sm-none"></i>
+                    </a>
+                </li>
+            </ul>
     </div>
     <div class="card">
         <div class="tab-content">
@@ -984,7 +985,7 @@
                                                     </thead>
                                                     <tbody>
                                                         {{-- ubah nanti sort by date created --}}
-                                                        @foreach ($anggota_keluarga as $anggota ) 
+                                                        @foreach ($anggota_keluarga as $anggota)
                                                             <tr class="odd">
                                                                 <td class="text-center col-no" style="overflow: hidden;">
                                                                     {{ $loop->iteration }}
@@ -1221,241 +1222,8 @@
                     </div>
                 </div>
             </div>
-            <div class="tab-pane fade grab" id="navs-pills-justified-profile" role="tabpanel">
-                <div class="container flex-wrap overflow-auto">
-                    <div class="row justify-center">
-                        <h1 class="fw-bold" style="color: #000 !important; text-transform: capitalize;">
-                            {{ $trah->tree_name }}</h1>
-                        <div class="tree justify-content-center">
-                            <ul>
-                                @foreach ($rootMember as $member)
-                                    @include('partials.family-member', ['member' => $member])
-                                @endforeach
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- BAGIAN HUBUNGAN KELUARGA -->
-            <div class="tab-pane fade {{ request()->has('compare') ? 'show active' : '' }}"
-                id="navs-pills-justified-messages" role="tabpanel">
-                {{-- ini page 3 --}}
-                <div class="mb-4">
-                    <div class="card-body">
-                        <!-- <h5 class="card-title text-center w-100">Perbandingan Hubungan Keluarga</h5> -->
-
-                        <form action="{{ route('keluarga.detail.public', $tree_id) }}" method="GET">
-                            @csrf
-                            <input type="hidden" name="tree_id" value="{{ $tree_id }}">
-                            <input type="hidden" name="compare" value="true">
-
-                            <div class="container px-4">
-                                <div class="row gx-5">
-                                    <div class="col">
-                                        <div class="mb-3">
-                                            <label for="person1" class="form-label text-center w-100">Pilih Anggota
-                                                Keluarga 1:</label>
-                                            <div class="d-flex justify-content-center">
-                                                <select name="name1" id="person1" class="form-control" required>
-                                                    <option value="" style="color: gray;">-- Pilih --</option>
-                                                    @foreach ($anggota_keluarga as $trah)
-                                                        <option value="{{ $trah->nama }}" style="color: black;"
-                                                            {{ old('name1', $person1->nama ?? '') == $trah->nama ? 'selected' : '' }}>
-                                                            {{ $trah->nama }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="col">
-                                        <div class="mb-3">
-                                            <label for="person2" class="form-label text-center w-100">Pilih Anggota
-                                                Keluarga 2:</label>
-                                            <select name="name2" id="person2" class="form-control" required>
-                                                <option value="" style="color: gray;">-- Pilih --</option>
-                                                @foreach ($anggota_keluarga as $trah)
-                                                    <option value="{{ $trah->nama }}"
-                                                        {{ old('name2', $person2->nama ?? '') == $trah->nama ? 'selected' : '' }}>
-                                                        {{ $trah->nama }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                        <div class="row g-3">
-                            <div class="col-12 text-center">
-                                <button type="submit" class="btn btn-primary w-100 rounded-pill">Cari hubungannya yuk</button>
-                            </div>
-                        </div>
-                        </form>
-
-
-                        <!-- tabel hasil hubungan -->
-                        @if (isset($relationshipDetails) && isset($relationshipDetailsReversed))
-                            <div class="row" id="relationship-details">
-                            
-                                <h4 class="text-center text-lg font-semibold mb-5 mt-5">Hasil Perbandingan</h4>
-
-                                <!-- Kolom hubungan anggota 1 -->
-                                <div class="col-md-6">
-                                    <div class="bg-white shadow-md p-5 rounded-md mt-3">
-                                        @if (is_array($relationshipDetails))
-                                            <div
-                                                class="bg-primary text-white text-center rounded-pill p-3 mb-3">
-                                                {{ $relationshipDetails['relation'] }}
-                                            </div>
-                                            @if (!empty($relationshipDetails['detailedPath']))
-                                                <div class="bg-[#FEF3C7] text-gray-800 p-3 rounded-md mb-3">
-                                                    <strong class="flex justify-center mb-3">Jalur Hubungan
-                                                        Keluarga:</strong>
-                                                    <ul class="list-group mt-2">
-                                                        @foreach ($relationshipDetails['detailedPath'] as $detail)
-                                                            <li class="list-group-item">{{ $detail }}</li>
-                                                        @endforeach
-                                                    </ul>
-                                                </div>
-                                            @elseif(isset($path) && count($path))
-                                                <div class="bg-[#FEF3C7] text-gray-800 p-3 rounded-md mb-3">
-                                                    <strong>Jalur (BFS fallback):</strong>
-                                                    <p>
-                                                        {{ implode(' → ', array_map(fn($m) => $m->nama, $path)) }}
-                                                    </p>
-                                                </div>
-                                            @endif
-                                        @else
-                                            <div class="alert alert-warning">{{ $relationshipDetails }}</div>
-                                        @endif
-                                    </div>
-                                </div>
-
-                                <!-- Kolom hubungan keluarga 2 -->
-                                <div class="col-md-6 mt-4 mt-md-0">
-                                    <div class="bg-white shadow-md p-5 rounded-md mt-3">
-                                        @if (is_array($relationshipDetailsReversed))
-                                            <div
-                                                class="bg-primary  text-white text-center rounded-pill p-3 mb-3">
-                                                {{ $relationshipDetailsReversed['relation'] }}
-                                            </div>
-                                            @if (!empty($relationshipDetailsReversed['detailedPath']))
-                                                <div class="bg-[#FEF3C7] text-gray-800 p-3 rounded-md mb-3">
-                                                    <strong class="flex justify-center mb-3">Jalur Hubungan
-                                                        Keluarga:</strong>
-                                                    <ul class="list-group mt-2">
-                                                        @foreach ($relationshipDetailsReversed['detailedPath'] as $detail)
-                                                            <li class="list-group-item">{{ $detail }}</li>
-                                                        @endforeach
-                                                    </ul>
-                                                </div>
-                                            @elseif(isset($pathRev) && count($pathRev))
-                                                <div class="bg-[#FEF3C7] text-gray-800 p-3 rounded-md mb-3">
-                                                    <strong>Jalur (BFS fallback):</strong>
-                                                    <p>
-                                                        {{ implode(' → ', array_map(fn($m) => $m->nama, $pathRev)) }}
-                                                    </p>
-                                                </div>
-                                            @endif
-                                        @else
-                                            <div class="alert alert-warning">{{ $relationshipDetailsReversed }}</div>
-                                        @endif
-                                    </div>
-
-                                </div>
-
-                            </div>
-                        @endif
-
-                        <!-- <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1030;">
-
-                            <button type="button" class="btn btn-danger btn-lg rounded-circle d-flex align-items-center justify-content-center" 
-                                    style="width: 60px; height: 60px;" onclick="resetForm();" title="Reset Form">
-                                <i class="fas fa-undo"></i> </button>
-
-                        </div> -->
-                         <div class="d-flex justify-content-end mt-4">
-                            <button type="button" class="btn btn-danger rounded-pill" onclick="resetForm();"><i class="fas fa-undo"></i></button>
-                        </div> 
-
-                        @if (isset($relationshipDetails) && isset($relationshipDetailsReversed))
-                            <script>
-                                window.onload = () => {
-                                    document.getElementById('relationship-details')?.scrollIntoView({
-                                        behavior: 'smooth'
-                                    });
-                                }
-                            </script>
-                        @endif
-
-                        <script>
-                            function resetForm() {
-                                document.querySelector("form").reset();
-                                document.querySelector("#person1").selectedIndex = 0;
-                                document.querySelector("#person2").selectedIndex = 0;
-                                document.getElementById("relationship-details").innerHTML = ''; // Clear results
-                            }
-                        </script>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
-
-    <script>
-        $(document).ready(function() {
-            $('#relationshipComparisonForm').submit(function(e) {
-                e.preventDefault();
-
-                // Tampilkan loading
-                $('#relationInfo').html(
-                    '<div class="text-center"><i class="fas fa-spinner fa-spin fa-2x"></i> Memproses...</div>'
-                );
-                $('#relationshipResult').show();
-
-                $.ajax({
-                    url: "{{ route('pasangan.anggota.keluarga.compare') }}",
-                    method: "POST",
-                    data: $(this).serialize(),
-                    success: function(response) {
-                        // Tampilkan hasil hubungan
-                        let html = `
-                    <div class="relation-result">
-                        <p><strong>${response.person1.name}</strong> → <strong>${response.person2.name}</strong>: 
-                        ${response.relationship1to2.relation}</p>
-                        <p><strong>${response.person2.name}</strong> → <strong>${response.person1.name}</strong>: 
-                        ${response.relationship2to1.relation}</p>
-                    </div>
-                `;
-                        $('#relationInfo').html(html);
-
-                        // Tampilkan detail jalur hubungan jika ada
-                        if (response.relationship1to2.detailedPath.length > 0) {
-                            let detailsHtml =
-                                '<h6>Detail Hubungan:</h6><ul class="list-group">';
-                            response.relationship1to2.detailedPath.forEach(step => {
-                                detailsHtml +=
-                                    `<li class="list-group-item">${step}</li>`;
-                            });
-                            detailsHtml += '</ul>';
-                            $('#relationDetails').html(detailsHtml);
-                        }
-                    },
-                    error: function(xhr) {
-                        let errorMessage = 'Terjadi kesalahan saat memproses';
-                        if (xhr.responseJSON && xhr.responseJSON.message) {
-                            errorMessage = xhr.responseJSON.message;
-                        }
-                        $('#relationInfo').html(
-                            `<div class="alert alert-danger">${errorMessage}</div>`);
-                        $('#relationDetails').empty();
-                    }
-                });
-            });
-        });
-    </script>
 
     <script>
         const partnersData = {
@@ -1671,64 +1439,6 @@
             updateTable();
         });
     </script>
-
-    {{-- <script>
-        // Data pasangan untuk form edit
-        const partnersDataEdit = {
-            @foreach ($existingMembers as $member)
-                "{{ $member->id }}": [
-                    @foreach ($member->partners as $partner)
-                        {
-                            id: "{{ $partner->id }}",
-                            nama: "{{ $partner->nama }}",
-                            jenis_kelamin: "{{ $partner->jenis_kelamin }}"
-                        },
-                    @endforeach
-                ],
-            @endforeach
-        };
-
-        function loadPartnersEdit() {
-            const parent1Select = document.getElementById('parent_id_edit');
-            const parent2Select = document.getElementById('parent2_id_edit');
-            const selectedId = parent1Select.value;
-
-            // Reset partner dropdown
-            parent2Select.innerHTML = '<option value="">Pilih Pasangan</option>';
-            parent2Select.disabled = true;
-
-            if (!selectedId) return;
-
-            // Enable and load partners if available
-            const partners = partnersDataEdit[selectedId];
-            if (partners && partners.length > 0) {
-                parent2Select.disabled = false;
-
-                partners.forEach(partner => {
-                    const option = document.createElement('option');
-                    option.value = partner.id;
-                    option.textContent =
-                        `${partner.nama} (${partner.jenis_kelamin === 'Laki-Laki' ? 'Pak' : 'Ibu'})`;
-
-                    // Set selected jika ini adalah pasangan yang sudah ada
-                    if ("{{ $anggota->parent_partner_id }}" == partner.id) {
-                        option.selected = true;
-                    }
-
-                    parent2Select.appendChild(option);
-                });
-            }
-        }
-
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            // Panggil saat pertama kali load
-            loadPartnersEdit();
-
-            // Tambahkan event listener untuk perubahan
-            document.getElementById('parent_id_edit').addEventListener('change', loadPartnersEdit);
-        });
-    </script> --}}
 
 
 @endsection

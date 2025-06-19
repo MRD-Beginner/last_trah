@@ -11,6 +11,61 @@ use Illuminate\Support\Facades\Hash;
 
 class KeluargaController extends Controller
 {
+    public function hubungan($id, Request $request)
+    {
+        $trah = Trah::with(['anggotaKeluarga' => function ($query) {
+            $query->orderBy('urutan');
+        }])->findOrFail($id);
+
+        $tree_id = $id;
+        $anggota_keluarga = $trah->anggotaKeluarga;
+
+        $person1 = null;
+        $person2 = null;
+        $relationshipDetails = null;
+        $relationshipDetailsReversed = null;
+        $path = null;
+        $pathRev = null;
+
+        if ($request->has('compare') && $request->filled(['name1', 'name2'])) {
+            $person1 = Anggota_Keluarga::where('nama', $request->name1)
+                ->where('tree_id', $tree_id)
+                ->first();
+            $person2 = Anggota_Keluarga::where('nama', $request->name2)
+                ->where('tree_id', $tree_id)
+                ->first();
+
+            if ($person1 && $person2) {
+                $logicController = new \App\Http\Controllers\LogicController;
+
+                // Arah Person1 -> Person2 BFS
+                $path = $logicController->bfs($person1, $person2->id);
+                $relationshipDetails = $path
+                    ? $logicController->relationshipPath($path, $person1->nama, $person2->nama)
+                    : ['relation' => 'Tidak ada hubungan yang ditemukan.', 'detailedPath' => []];
+
+                // Arah Person2 -> Person1 (dibalik)
+                $pathRev = $logicController->bfs($person2, $person1->id);
+                $relationshipDetailsReversed = $pathRev
+                    ? $logicController->relationshipPath($pathRev, $person2->nama, $person1->nama)
+                    : ['relation' => 'Tidak ada hubungan yang ditemukan.', 'detailedPath' => []];
+            }
+        }
+
+        return view('detail.hubungan', [
+            'trah' => $trah,
+            'anggota_keluarga' => $anggota_keluarga,
+            'tree_id' => $tree_id,
+            'person1' => $person1,
+            'person2' => $person2,
+            'relationshipDetails' => $relationshipDetails,
+            'relationshipDetailsReversed' => $relationshipDetailsReversed,
+            'path' => $path,
+            'pathRev' => $pathRev,
+            'name1' => $request->name1,
+            'name2' => $request->name2
+        ]);
+    }
 
     public function verifyPassword(Request $request, $id)
     {
@@ -224,6 +279,30 @@ class KeluargaController extends Controller
             'relationshipDetails' => $relationshipDetails,
             'relationshipDetailsReversed' => $relationshipDetailsReversed,
             'tree_id' => $tree_id // Pastikan tree_id dikirim dengan nama key yang benar
+        ]);
+    }
+
+    public function pohon($id)
+    {
+        $tree_id = $id;
+        $trah = Trah::with(['anggotaKeluarga' => function ($query) {
+            $query->orderBy('urutan');
+        }])->findOrFail($tree_id);
+
+        $anggota_keluarga = $trah->anggotaKeluarga;
+        $pasangan_keluarga = Partner::whereIn('anggota_keluarga_id', $anggota_keluarga->pluck('id'))
+            ->orderBy('nama')
+            ->get();
+
+        // Anggota tanpa parent (root members)
+        $rootMember = $anggota_keluarga->whereNull('parent_id');
+        $rootPartner = $pasangan_keluarga;
+
+        return view('detail.pohon', [
+            'trah' => $trah,
+            'rootMember' => $rootMember,
+            'rootPartner' => $rootPartner,
+            'tree_id' => $tree_id
         ]);
     }
 

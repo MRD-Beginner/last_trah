@@ -21,7 +21,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::get('user/data/keluarga', [UserController::class, 'keluarga'])->name('user.keluarga');
-    
+
     Route::get('user/profile', [ProfileController::class, 'edit'])->name('profile.edit');
 
 
@@ -57,18 +57,19 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::get('admin/data/user', [UserController::class, 'index'])->name('admin.user.management');
 
     Route::get('keluarga/detail/private/{id}', [KeluargaController::class, 'detail_private'])->name('keluarga.detail.private');
-
 });
 Route::post('/keluarga/{id}/verify-password', [KeluargaController::class, 'verifyPassword'])
- ->name('keluarga.verify.password');
+    ->name('keluarga.verify.password');
 
-// Route::get('detail/public/data/keluarga', function () {
-//         return view('detail.detaill');
-//     });
+Route::get('detail/public/data/keluarga/data/{id}', [KeluargaController::class, 'detail_public'])->name('keluarga.detail.public');
+
+Route::get('detail/public/data/keluarga/hubungan/{id}', [KeluargaController::class, 'hubungan'])->name('keluarga.detail.hubungan');
+
+Route::get('/detail/public/data/keluarga/pohon/{id}', [KeluargaController::class, 'pohon'])->name('keluarga.detail.pohon');
+
 
 Route::get('detail/public/data/keluarga/{id}', [KeluargaController::class, 'showPublic'])->name('keluarga.public');
 
-Route::get('keluarga/detail/public/{id}', [KeluargaController::class, 'detail_public'])->name('keluarga.detail.public');
 
 Route::get('keluarga/detail/private/{id}', [KeluargaController::class, 'detail_private'])->name('keluarga.detail.private');
 

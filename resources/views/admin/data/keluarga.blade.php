@@ -362,10 +362,10 @@
                                                 <i class="fas fa-trash fa-md"></i>
                                             </button>
 
-                                            <a class="btn btn-sm btn-info rounded-pill px-2 py-1" href="#"
-                                                onclick="copyShareLink(event, '{{ route('keluarga.detail.public', ['id' => $id]) }}')">
+                                            {{-- <a class="btn btn-sm btn-info rounded-pill px-2 py-1" href="#"
+                                                onclick="copyShareLink(event, '{{ route('keluarga.detail.public', ['Trah' => $id]) }}')">
                                                 Bagikan
-                                            </a>
+                                            </a> --}}
 
                                             <script>
                                                 function copyShareLink(event, url) {
@@ -422,10 +422,10 @@
                                                 Hapus
                                             </button>
 
-                                            <a class="btn btn-sm btn-info rounded-pill px-2 py-1" href="#"
+                                            {{-- <a class="btn btn-sm btn-info rounded-pill px-2 py-1" href="#"
                                                 onclick="copyShareLink(event, '{{ route('keluarga.detail.public', ['id' => $id]) }}')">
                                                 Bagikan
-                                            </a>
+                                            </a> --}}
 
                                             <script>
                                                 function copyShareLink(event, url) {
