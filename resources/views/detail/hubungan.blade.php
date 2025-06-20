@@ -48,7 +48,7 @@
     <div class="card">
         <div class="card-body">
             <form action="{{ route('keluarga.detail.hubungan', $tree_id) }}" method="GET">
-                @csrf
+                
                 <input type="hidden" name="tree_id" value="{{ $tree_id }}">
                 <input type="hidden" name="compare" value="true">
 
@@ -117,7 +117,7 @@
                                     </div>
                                 @elseif(isset($path) && count($path))
                                     <div class="bg-[#FEF3C7] text-gray-800 p-3 rounded-md mb-3">
-                                        <strong>Jalur (BFS fallback):</strong>
+                                        <strong>Tidak ada jalur yang ditemukan</strong>
                                         <p>
                                             {{ implode(' → ', array_map(fn($m) => $m->nama, $path)) }}
                                         </p>
@@ -147,7 +147,7 @@
                                     </div>
                                 @elseif(isset($pathRev) && count($pathRev))
                                     <div class="bg-[#FEF3C7] text-gray-800 p-3 rounded-md mb-3">
-                                        <strong>Jalur (BFS fallback):</strong>
+                                        <strong>Tidak ada jalur yang ditemukan</strong>
                                         <p>
                                             {{ implode(' → ', array_map(fn($m) => $m->nama, $pathRev)) }}
                                         </p>

@@ -392,13 +392,13 @@ class LogicController extends Controller
         
             // 1. cek orang tua anak
             if ($next->parent_id == $current->id) {
-                $relation = ($current->jenis_kelamin == 'Laki-Laki') ? "bapak " : "ibuk ";
-                $detailedPath[] = " {$current->nama} {$relation} dari {$next->nama}";
+                $relation = ($current->jenis_kelamin == 'Laki-Laki') ? "adalah bapak dari " : "adalah ibuk dari ";
+                $detailedPath[] = " {$current->nama} {$relation} {$next->nama}";
                 continue;
             }
             // 2. cek orang tua anak (reverse)
             elseif ($current->parent_id == $next->id) {
-                $relation = ($current->jenis_kelamin == 'Laki-Laki') ? "anak lanang " : "anak wedok ";
+                $relation = ($current->jenis_kelamin == 'Laki-Laki') ? "adalah anak lanang " : "adalah anak wedok ";
                 $detailedPath[] = " {$current->nama} {$relation}ke-{$current->urutan} dari {$next->nama}";
                 continue;
             }
