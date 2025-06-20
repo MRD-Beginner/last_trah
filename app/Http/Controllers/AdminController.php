@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\trah;
+use App\Models\Trah;
 use App\Models\User;
 use Illuminate\Container\Attributes\Auth;
 use Illuminate\Http\Request;
